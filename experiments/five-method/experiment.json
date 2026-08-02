@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "id": "cli-item-list-fields-five-method",
+  "task": "cli/cli project item-list field selection",
+  "baselineCommit": "ae66a1c02e08366858f3070664f493afbe0cdf18",
+  "oracleCommit": "efe3f165dd297c85fff11473dbf586f2d39fbf86",
+  "oracleTree": "b4539ca014121861158af022e743c494436f1b1f",
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "high",
+  "softTokenCap": 20000000,
+  "wallClockMinutes": 120,
+  "maxSubagentsPerRun": 4,
+  "focusedTest": "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries",
+  "conditions": [
+    {
+      "id": "without",
+      "replicates": 3,
+      "requirementPolicy": "native",
+      "reviewPolicy": "native",
+      "workflow": "native Codex execution"
+    },
+    {
+      "id": "slim",
+      "replicates": 3,
+      "requirementPolicy": "one required clarification",
+      "reviewPolicy": "native",
+      "workflow": "Slim plan/debug/verify"
+    },
+    {
+      "id": "requirement-loop",
+      "replicates": 3,
+      "requirementPolicy": "clarify and revise until DESIGN_APPROVED",
+      "reviewPolicy": "native",
+      "workflow": "Slim plan/debug/verify"
+    },
+    {
+      "id": "requirement-review-loops",
+      "replicates": 3,
+      "requirementPolicy": "clarify and revise until DESIGN_APPROVED",
+      "reviewPolicy": "independent review and repair until REVIEW_APPROVED",
+      "workflow": "Slim plan/debug/verify"
+    },
+    {
+      "id": "full",
+      "replicates": 3,
+      "requirementPolicy": "skill-driven design clarification",
+      "reviewPolicy": "full workflow review layers",
+      "workflow": "Superpowers 6.1.1 composite workflow"
+    }
+  ],
+  "workflowPins": {
+    "fullSuperpowers": "d884ae04edebef577e82ff7c4e143debd0bbec99",
+    "slimSuperpowers": "fa07307f3dbf7822fb3077587fbde649b0aa66ed"
+  },
+  "pairing": {
+    "fullVsWithout": "historical randomized matched pairs",
+    "requirementVsReviewLoops": "later randomized matched pairs with a post-hoc canonical replacement in pair 1",
+    "crossBatchComparisons": "descriptive only"
+  }
+}

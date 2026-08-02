@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["candidate", "dimensions", "totalScore", "criticalGaps", "overallValidation", "confidence"],
+  "properties": {
+    "candidate": { "type": "string", "pattern": "^Candidate-[A-F]$" },
+    "dimensions": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "score", "maxScore", "validation", "justification", "evidence"],
+        "properties": {
+          "name": { "type": "string" },
+          "score": { "type": "integer", "minimum": 0, "maximum": 25 },
+          "maxScore": { "type": "integer", "enum": [15, 25] },
+          "validation": { "type": "string", "enum": ["Verified", "Static", "Unverified", "Contradicted"] },
+          "justification": { "type": "string" },
+          "evidence": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "totalScore": { "type": "integer", "minimum": 0, "maximum": 100 },
+    "criticalGaps": { "type": "array", "items": { "type": "string" } },
+    "overallValidation": { "type": "string", "enum": ["Verified", "Static", "Unverified", "Contradicted"] },
+    "confidence": { "type": "string", "enum": ["high", "medium", "low"] }
+  }
+}

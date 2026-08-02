@@ -1,0 +1,48 @@
+{
+  "schemaVersion": 1,
+  "id": "cli-item-list-fields",
+  "repository": "cli/cli",
+  "source": {
+    "checkout": "candidates/cli",
+    "commit": "ae66a1c02e08366858f3070664f493afbe0cdf18"
+  },
+  "baseline": {
+    "checkout": "baselines/cli-item-list-fields",
+    "commit": "ae66a1c02e08366858f3070664f493afbe0cdf18",
+    "sourceCommit": "ae66a1c02e08366858f3070664f493afbe0cdf18"
+  },
+  "reference": {
+    "commit": "efe3f165dd297c85fff11473dbf586f2d39fbf86",
+    "tree": "b4539ca014121861158af022e743c494436f1b1f"
+  },
+  "assets": {
+    "task": "packs/tasks/cli-item-list-fields/task.md",
+    "contract": "packs/tasks/cli-item-list-fields/ground-truth/contract.md",
+    "rubric": "packs/tasks/cli-item-list-fields/ground-truth/rubric.md",
+    "operatorGuide": "packs/tasks/cli-item-list-fields/ground-truth/operator-guide.md",
+    "reference": "candidates/cli-oracle",
+    "judgePrompt": "evaluation/judge-prompt.md",
+    "judgeSchema": "evaluation/judge-output.schema.json"
+  },
+  "validation": {
+    "focusedTests": [
+      "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+    ],
+    "productDiffPaths": [
+      "pkg/cmd/project/item-list",
+      "pkg/cmd/project/shared/queries"
+    ],
+    "judgeContextPaths": [
+      "pkg/cmd/project/item-list/item_list.go",
+      "pkg/cmd/project/shared/queries/resolve_fields.go",
+      "pkg/cmd/project/shared/queries/queries.go"
+    ]
+  },
+  "isolation": {
+    "requireSingleCommit": true,
+    "requireNoRemotes": true,
+    "networkDuringRun": false,
+    "hideSiblingRuns": true,
+    "hideGroundTruthFromCandidate": true
+  }
+}
