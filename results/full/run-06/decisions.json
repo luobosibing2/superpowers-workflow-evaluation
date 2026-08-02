@@ -1,0 +1,24 @@
+{
+  "operator": [
+    {
+      "timestampUtc": "2026-07-29T14:59:16.8760530Z",
+      "candidateTurn": 1,
+      "question": "Do you approve those flag names and preserving the mixed selection order when both flags are repeated?",
+      "answer": "OPERATOR_ANSWER: Approve `--field` and `--field-id` as repeatable flags. They must be mutually exclusive, so mixed selection order is not applicable."
+    },
+    {
+      "timestampUtc": "2026-07-29T14:59:39.2804340Z",
+      "candidateTurn": 2,
+      "question": "Approve this design so I can write and commit the required specification document.",
+      "answer": "OPERATOR_ANSWER: Broadly approve, with these required adjustments: do not reject repeated selections solely because they repeat; preserve requested order. Either selection flag must fail clearly when explicit formatted/JSON output is requested. Detect ambiguous case-insensitive names and report candidate IDs deterministically. If field definitions are paginated, obtain all pages only when fields were requested. Normalize carriage returns and newlines in rendered cells, and associate values by field ID."
+    },
+    {
+      "timestampUtc": "2026-07-29T15:00:57.8310830Z",
+      "candidateTurn": 3,
+      "question": "May I create the local commit `docs: specify project item list field columns`, then ask you to review the committed specification before implementation planning?",
+      "answer": "OPERATOR_ANSWER: Do not create a documentation-only commit or pause for specification review. Proceed with the implementation and local verification. Field-definition pagination should occur only when the initial response indicates additional pages and a field selection was requested."
+    }
+  ],
+  "design": [],
+  "review": []
+}

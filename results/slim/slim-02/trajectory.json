@@ -1,0 +1,874 @@
+{
+  "schemaVersion": 1,
+  "source": "derived from native Codex timestamps and last_token_usage; inherited fork prefixes removed",
+  "classifierBoundary": "stage labels and interval boundaries are derived; actor role, tool use, timestamps, and token usage are source facts",
+  "id": "slim-02",
+  "condition": "slim",
+  "cohortId": "v9-macos-slim-add-on",
+  "executionBatch": "slim-execution-2026-07-30",
+  "scoreBatch": "slim-judge-2026-07-30",
+  "pairingKind": "post-hoc descriptive alignment; not contemporaneous randomized",
+  "status": "completed",
+  "score": 79,
+  "scoreStatus": "supplemental-posthoc-blind-judged",
+  "scoreN": 2,
+  "estimatedCredits": 26.725125,
+  "start": "2026-07-31T12:35:43.931Z",
+  "end": "2026-07-31T12:44:52.047Z",
+  "wallSeconds": 548.118,
+  "firstMutationSeconds": 139.713,
+  "operatorTurns": 1,
+  "reviewerTurns": 0,
+  "designQuestions": null,
+  "designRequests": null,
+  "designApprovalRounds": null,
+  "designApprovedAt": null,
+  "firstReviewReadyAt": null,
+  "reviewRounds": 0,
+  "reviewApprovedAt": null,
+  "reviewStatus": "not-applicable",
+  "reviewFindings": [],
+  "reviewFixRounds": 0,
+  "toolCalls": 34,
+  "tokenSummary": {
+    "input": 2006070,
+    "cached": 1885440,
+    "output": 19738,
+    "reasoning": 6875,
+    "total": 2025808
+  },
+  "stageTokens": {
+    "requirements": {
+      "input": 50005,
+      "cached": 39424,
+      "output": 315,
+      "reasoning": 167,
+      "total": 50320
+    },
+    "plan": {
+      "input": 35921,
+      "cached": 34560,
+      "output": 173,
+      "reasoning": 36,
+      "total": 36094
+    },
+    "explore": {
+      "input": 266253,
+      "cached": 262144,
+      "output": 163,
+      "reasoning": 31,
+      "total": 266416
+    },
+    "implement": {
+      "input": 161323,
+      "cached": 153856,
+      "output": 2703,
+      "reasoning": 776,
+      "total": 164026
+    },
+    "test": {
+      "input": 768656,
+      "cached": 750592,
+      "output": 4087,
+      "reasoning": 2053,
+      "total": 772743
+    },
+    "review": {
+      "input": 151006,
+      "cached": 136448,
+      "output": 8823,
+      "reasoning": 2440,
+      "total": 159829
+    },
+    "coordinate": {
+      "input": 453642,
+      "cached": 399872,
+      "output": 2976,
+      "reasoning": 1169,
+      "total": 456618
+    },
+    "operator": {
+      "input": 46502,
+      "cached": 37120,
+      "output": 455,
+      "reasoning": 169,
+      "total": 46957
+    },
+    "finish": {
+      "input": 72762,
+      "cached": 71424,
+      "output": 43,
+      "reasoning": 34,
+      "total": 72805
+    }
+  },
+  "wallStageSeconds": {
+    "requirements": 22.863,
+    "plan": 7.902000000000001,
+    "explore": 127.48800000000006,
+    "implement": 45.490000000000066,
+    "test": 85.38999999999987,
+    "review": 12.33499999999998,
+    "coordinate": 231.42699999999996,
+    "operator": 14.515999999999998,
+    "finish": 0.7050000000000409
+  },
+  "laneTokens": {
+    "root": 1821346,
+    "child": 0,
+    "guardian": 157505,
+    "operator": 46957,
+    "reviewer": 0
+  },
+  "sessionCounts": {
+    "root": 1,
+    "child": 0,
+    "guardian": 1,
+    "operator": 1,
+    "reviewer": 0
+  },
+  "inheritedTokenRecordsRemoved": 0,
+  "inheritedTokensRemoved": 0,
+  "wallTimeline": [
+    {
+      "startSeconds": 0,
+      "endSeconds": 14.474,
+      "stage": "requirements",
+      "evidenceId": "event-001",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 14.474,
+      "endSeconds": 37.354,
+      "stage": "coordinate",
+      "evidenceId": "event-002",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 37.354,
+      "endSeconds": 45.743,
+      "stage": "requirements",
+      "evidenceId": "event-003",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 45.743,
+      "endSeconds": 60.259,
+      "stage": "operator",
+      "evidenceId": "event-004",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 60.259,
+      "endSeconds": 68.161,
+      "stage": "plan",
+      "evidenceId": "event-005",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 68.161,
+      "endSeconds": 73.253,
+      "stage": "test",
+      "evidenceId": "event-006",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 73.253,
+      "endSeconds": 102.659,
+      "stage": "coordinate",
+      "evidenceId": "event-007",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 102.659,
+      "endSeconds": 139.713,
+      "stage": "explore",
+      "evidenceId": "event-008",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 139.713,
+      "endSeconds": 144.439,
+      "stage": "review",
+      "evidenceId": "event-009",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 144.439,
+      "endSeconds": 149.148,
+      "stage": "implement",
+      "evidenceId": "event-010",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 149.148,
+      "endSeconds": 161.677,
+      "stage": "test",
+      "evidenceId": "event-011",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 161.677,
+      "endSeconds": 222.285,
+      "stage": "coordinate",
+      "evidenceId": "event-012",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 222.285,
+      "endSeconds": 226.295,
+      "stage": "review",
+      "evidenceId": "event-013",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 226.295,
+      "endSeconds": 249.605,
+      "stage": "coordinate",
+      "evidenceId": "event-014",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 249.605,
+      "endSeconds": 285.392,
+      "stage": "implement",
+      "evidenceId": "event-015",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 285.392,
+      "endSeconds": 288.991,
+      "stage": "review",
+      "evidenceId": "event-016",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 288.991,
+      "endSeconds": 295.482,
+      "stage": "test",
+      "evidenceId": "event-017",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 295.482,
+      "endSeconds": 329.315,
+      "stage": "coordinate",
+      "evidenceId": "event-018",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 329.315,
+      "endSeconds": 334.309,
+      "stage": "implement",
+      "evidenceId": "event-019",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 334.309,
+      "endSeconds": 336.975,
+      "stage": "test",
+      "evidenceId": "event-020",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 336.975,
+      "endSeconds": 347.897,
+      "stage": "coordinate",
+      "evidenceId": "event-021",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 347.897,
+      "endSeconds": 354.158,
+      "stage": "explore",
+      "evidenceId": "event-022",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 354.158,
+      "endSeconds": 373.021,
+      "stage": "test",
+      "evidenceId": "event-023",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 373.021,
+      "endSeconds": 381.969,
+      "stage": "coordinate",
+      "evidenceId": "event-024",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 381.969,
+      "endSeconds": 408.904,
+      "stage": "explore",
+      "evidenceId": "event-025",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 408.904,
+      "endSeconds": 411.202,
+      "stage": "test",
+      "evidenceId": "event-026",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 411.202,
+      "endSeconds": 414.559,
+      "stage": "coordinate",
+      "evidenceId": "event-027",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 414.559,
+      "endSeconds": 434.169,
+      "stage": "test",
+      "evidenceId": "event-028",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 434.169,
+      "endSeconds": 443.685,
+      "stage": "coordinate",
+      "evidenceId": "event-029",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 443.685,
+      "endSeconds": 451.219,
+      "stage": "test",
+      "evidenceId": "event-030",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 451.219,
+      "endSeconds": 453.323,
+      "stage": "coordinate",
+      "evidenceId": "event-031",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 453.323,
+      "endSeconds": 456.359,
+      "stage": "test",
+      "evidenceId": "event-032",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 456.359,
+      "endSeconds": 466.267,
+      "stage": "coordinate",
+      "evidenceId": "event-033",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 466.267,
+      "endSeconds": 493.991,
+      "stage": "explore",
+      "evidenceId": "event-034",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 493.991,
+      "endSeconds": 500.193,
+      "stage": "coordinate",
+      "evidenceId": "event-035",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 500.193,
+      "endSeconds": 502.822,
+      "stage": "explore",
+      "evidenceId": "event-036",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 502.822,
+      "endSeconds": 506.075,
+      "stage": "test",
+      "evidenceId": "event-037",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 506.075,
+      "endSeconds": 516.508,
+      "stage": "coordinate",
+      "evidenceId": "event-038",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 516.508,
+      "endSeconds": 543.393,
+      "stage": "explore",
+      "evidenceId": "event-039",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 543.393,
+      "endSeconds": 547.411,
+      "stage": "test",
+      "evidenceId": "event-040",
+      "sourceEvidenceCount": 0
+    },
+    {
+      "startSeconds": 547.411,
+      "endSeconds": 548.116,
+      "stage": "finish",
+      "evidenceId": "event-041",
+      "sourceEvidenceCount": 0
+    }
+  ],
+  "laneTimeline": [
+    {
+      "startSeconds": 7.612,
+      "endSeconds": 14.474,
+      "stage": "requirements",
+      "label": "梳理需求与设计",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-042",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 14.474,
+      "endSeconds": 37.354,
+      "stage": "coordinate",
+      "label": "派发、等待或审批",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-043",
+      "sourceEvidenceCount": 4
+    },
+    {
+      "startSeconds": 37.354,
+      "endSeconds": 60.259,
+      "stage": "requirements",
+      "label": "澄清外部行为",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-044",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 45.743,
+      "endSeconds": 54.68,
+      "stage": "operator",
+      "label": "回答外部行为要求",
+      "lane": "GT Operator",
+      "laneGroup": "operator",
+      "confidence": "high",
+      "evidenceId": "event-045",
+      "sourceEvidenceCount": 4
+    },
+    {
+      "startSeconds": 60.259,
+      "endSeconds": 68.161,
+      "stage": "plan",
+      "label": "形成实施计划",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-046",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 68.161,
+      "endSeconds": 73.253,
+      "stage": "test",
+      "label": "运行 Go 测试",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-047",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 73.253,
+      "endSeconds": 102.659,
+      "stage": "coordinate",
+      "label": "派发、等待或审批",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-048",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 102.659,
+      "endSeconds": 139.713,
+      "stage": "explore",
+      "label": "搜索或阅读代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "low",
+      "evidenceId": "event-049",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 139.713,
+      "endSeconds": 144.439,
+      "stage": "review",
+      "label": "独立检查实现与契约",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-050",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 144.439,
+      "endSeconds": 149.148,
+      "stage": "implement",
+      "label": "修改产品或测试代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-051",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 149.148,
+      "endSeconds": 161.677,
+      "stage": "test",
+      "label": "运行 Go 测试",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-052",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 161.677,
+      "endSeconds": 222.285,
+      "stage": "coordinate",
+      "label": "派发、等待或审批",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-053",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 222.285,
+      "endSeconds": 226.295,
+      "stage": "review",
+      "label": "独立检查实现与契约",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-054",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 226.295,
+      "endSeconds": 249.605,
+      "stage": "coordinate",
+      "label": "派发、等待或审批",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-055",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 249.605,
+      "endSeconds": 285.392,
+      "stage": "implement",
+      "label": "修改产品或测试代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-056",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 285.392,
+      "endSeconds": 288.991,
+      "stage": "review",
+      "label": "独立检查实现与契约",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-057",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 288.991,
+      "endSeconds": 329.315,
+      "stage": "test",
+      "label": "验证实现与证据",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-058",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 295.482,
+      "endSeconds": 336.975,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-059",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 329.315,
+      "endSeconds": 334.309,
+      "stage": "implement",
+      "label": "修改产品或测试代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-060",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 334.309,
+      "endSeconds": 347.897,
+      "stage": "test",
+      "label": "运行 Go 测试",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-061",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 336.975,
+      "endSeconds": 373.021,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-062",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 347.897,
+      "endSeconds": 354.158,
+      "stage": "explore",
+      "label": "搜索或阅读代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "low",
+      "evidenceId": "event-063",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 354.158,
+      "endSeconds": 381.969,
+      "stage": "test",
+      "label": "验证实现与证据",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-064",
+      "sourceEvidenceCount": 3
+    },
+    {
+      "startSeconds": 373.021,
+      "endSeconds": 411.202,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-065",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 381.969,
+      "endSeconds": 408.904,
+      "stage": "explore",
+      "label": "搜索或阅读代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "low",
+      "evidenceId": "event-066",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 408.904,
+      "endSeconds": 414.559,
+      "stage": "test",
+      "label": "验证实现与证据",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-067",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 411.202,
+      "endSeconds": 434.169,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-068",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 414.559,
+      "endSeconds": 443.685,
+      "stage": "test",
+      "label": "验证实现与证据",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-069",
+      "sourceEvidenceCount": 4
+    },
+    {
+      "startSeconds": 434.169,
+      "endSeconds": 456.359,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-070",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 443.685,
+      "endSeconds": 451.219,
+      "stage": "test",
+      "label": "验证实现与证据",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-071",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 451.219,
+      "endSeconds": 453.323,
+      "stage": "coordinate",
+      "label": "派发、等待或审批",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-072",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 453.323,
+      "endSeconds": 466.267,
+      "stage": "test",
+      "label": "运行 Go 测试",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-073",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 456.359,
+      "endSeconds": 506.075,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-074",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 466.267,
+      "endSeconds": 493.991,
+      "stage": "explore",
+      "label": "搜索或阅读代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "low",
+      "evidenceId": "event-075",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 493.991,
+      "endSeconds": 500.193,
+      "stage": "coordinate",
+      "label": "派发、等待或审批",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-076",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 500.193,
+      "endSeconds": 502.822,
+      "stage": "explore",
+      "label": "搜索或阅读代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "medium",
+      "evidenceId": "event-077",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 502.822,
+      "endSeconds": 516.508,
+      "stage": "test",
+      "label": "定位失败根因",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-078",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 506.075,
+      "endSeconds": 506.102,
+      "stage": "coordinate",
+      "label": "审批动作风险",
+      "lane": "Guardian",
+      "laneGroup": "guardian",
+      "confidence": "high",
+      "evidenceId": "event-079",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 516.508,
+      "endSeconds": 543.393,
+      "stage": "explore",
+      "label": "搜索或阅读代码",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "low",
+      "evidenceId": "event-080",
+      "sourceEvidenceCount": 1
+    },
+    {
+      "startSeconds": 543.393,
+      "endSeconds": 547.411,
+      "stage": "test",
+      "label": "验证实现与证据",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-081",
+      "sourceEvidenceCount": 2
+    },
+    {
+      "startSeconds": 547.411,
+      "endSeconds": 547.425,
+      "stage": "finish",
+      "label": "完成与交付",
+      "lane": "Parent",
+      "laneGroup": "root",
+      "confidence": "high",
+      "evidenceId": "event-082",
+      "sourceEvidenceCount": 1
+    }
+  ]
+}

@@ -1,0 +1,85 @@
+{
+  "candidate": "Candidate-C",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, table-only validation, and help examples are implemented; no-selection retains the original table path.",
+      "evidence": [
+        "product.diff: NewCmdList adds StringArray --field/--field-id, conflict checks, and repeated-field examples",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive resolution, canonical names, and actionable sorted unknown-field candidates are present, but ambiguous IDs retain returned connection order rather than being sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses EqualFold and sorts unknown-name candidates",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous matches append IDs without sorting",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByID formats and sorts name/ID candidates"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The normal path reuses returned fields and skips resolution with no selection, but the follow-up request is capped at LimitMax, so pagination stops after its first 100 fields.",
+      "evidence": [
+        "product.diff: resolveSelectedFields starts with project.Fields.Nodes and returns immediately when no fields are requested",
+        "product.diff: paged path calls ProjectFields(..., queries.LimitMax)",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: paginateAttributes returns when len(nodes) >= limit; ProjectFields receives limit 100"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 23,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All listed scalar, structured, multi-value, absent, and unknown-type cases have direct rendering paths. Multiline normalization is not implemented in the visible renderer, and the supplied baseline does not expose the table helper's behavior.",
+      "evidence": [
+        "product.diff: field_value_display.go covers date, iteration, labels, number, select, text, milestone, PRs, repository, users, and reviewers",
+        "product.diff: FieldValueDisplay matches values by field ID and returns empty for no match or unknown type",
+        "product.diff: field_value_display.go returns raw text values without CR/LF replacement",
+        "tests.log: focused item-list and shared-query tests passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "The selected fields are resolved before rendering; headers and per-item cells are appended in selected-field order, with lookup by field ID and an empty result for missing values.",
+      "evidence": [
+        "product.diff: runList resolves selections then calls printResults",
+        "product.diff: printResults appends each field.Name() to headers and FieldValueDisplay(i, field.ID()) per row",
+        "product.diff: item-list selected-fields test covers two headers and aligned values"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selection and retrieval errors return before table rendering; the focused diff uses existing client, query, exporter, and table abstractions while preserving the unselected command flow.",
+      "evidence": [
+        "product.diff: resolveSelectedFields errors are returned before printResults",
+        "product.diff: paged field retrieval errors are returned immediately",
+        "baseline/pkg/cmd/project/item-list/item_list.go and product.diff: existing owner/project/item/exporter flow is retained"
+      ]
+    }
+  ],
+  "totalScore": 87,
+  "criticalGaps": [
+    "Field-definition pagination is capped at 100 fields, so selections from later pages cannot be resolved.",
+    "Ambiguous field-ID diagnostics are not deterministically ordered.",
+    "Multiline value normalization is unverified because raw values are passed to an unavailable table helper."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "medium"
+}

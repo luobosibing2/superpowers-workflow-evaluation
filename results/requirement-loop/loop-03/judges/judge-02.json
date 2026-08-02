@@ -1,0 +1,81 @@
+{
+  "candidate": "Candidate-E",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, table-only validation, and a repeated-field help example are implemented; no-field flow remains unchanged.",
+      "evidence": [
+        "product.diff: item_list.go flag definitions and validateListOpts",
+        "product.diff: TestNewCmdList_InvalidFieldSelections",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exit 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolvers use case-insensitive matching, canonical selected fields, sorted candidates for unknown fields/IDs, and sorted ambiguous IDs.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolve_fields.go ambiguity-ID sort hunk",
+        "product.diff: item_list.go resolveFields"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Item fetching already includes the first field page; extra field pages are fetched only when a selection exists and page info requires it, with errors returned before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems firstFields/afterFields",
+        "product.diff: queries.go ProjectItemFields",
+        "product.diff: item_list.go resolveFields"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value variants render human-readable cells; unknown/missing values are empty and CR/LF normalization is applied.",
+      "evidence": [
+        "product.diff: item_list.go formatFieldValue and normalizeCell",
+        "product.diff: TestFormatFieldValue",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exit 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected headers are appended in request order, values are keyed by field node ID, and absent values produce empty cells without shifting later columns.",
+      "evidence": [
+        "product.diff: item_list.go printResults and projectItemFieldValues",
+        "product.diff: TestPrintResults_SelectedFieldsUseIDsAndKeepEmptyCells",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exit 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Validation and resolution occur before exporter/table output; lookup and pagination failures are propagated. The focused changes reuse existing query and command helpers.",
+      "evidence": [
+        "product.diff: item_list.go RunE, runList, resolveFields",
+        "product.diff: queries.go ProjectItemFields",
+        "baseline/pkg/cmd/project/item-list/item_list.go: existing runList/exporter path"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Static",
+  "confidence": "high"
+}

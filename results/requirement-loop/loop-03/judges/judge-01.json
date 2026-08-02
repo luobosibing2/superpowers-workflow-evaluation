@@ -1,0 +1,79 @@
+{
+  "candidate": "Candidate-E",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Both repeatable flags are registered; validation rejects mixed selections and formatted output; the added help example repeats --field. The no-selection path preserves the baseline output path.",
+      "evidence": [
+        "product.diff: item_list.go listOpts, flags, validateListOpts, and Example hunk",
+        "baseline/pkg/cmd/project/item-list/item_list.go: runList and printResults"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Name resolution uses EqualFold and canonical returned names; missing names/IDs enumerate sorted candidates; ambiguous IDs are now sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolve_fields.go sort.Strings(ids) hunk"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "The initial item query already fetches 100 field definitions. Selected fields invoke pagination only when Fields.PageInfo has another page, append every page, and return errors before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems firstFields=LimitMax",
+        "product.diff: queries.go ProjectItemFields and item_list.go resolveFields",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value variants are rendered, with ID extraction, empty unknown values, compact numbers, and CR/LF normalization.",
+      "evidence": [
+        "product.diff: item_list.go formatFieldValue, projectItemFieldValues, and normalizeCell",
+        "product.diff: item_list_test.go TestFormatFieldValue",
+        "tests.log: focused package tests passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolved canonical headers are appended in request order; each row looks up rendered values by field node ID, emitting an empty cell for missing values. The baseline owner/project/items path remains intact.",
+      "evidence": [
+        "product.diff: item_list.go runList, printResults, and projectItemFieldValues",
+        "product.diff: item_list_test.go TestPrintResults_SelectedFieldsUseIDsAndKeepEmptyCells",
+        "baseline/pkg/cmd/project/item-list/item_list.go: runList"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Validation and resolution errors return before exporter/table output; pagination errors propagate. The focused changes reuse existing query types and add targeted tests without altering unrelated behavior.",
+      "evidence": [
+        "product.diff: item_list.go validateListOpts, resolveFields, and runList",
+        "product.diff: queries.go ProjectItemFields",
+        "tests.log: focused package tests passed"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Static",
+  "confidence": "high"
+}

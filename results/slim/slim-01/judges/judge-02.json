@@ -1,0 +1,84 @@
+{
+  "candidate": "Candidate-B",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 12,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable selectors preserve order and no-selector behavior remains reachable, but selected fields are accepted with formatted/JSON output instead of conflicting clearly.",
+      "evidence": [
+        "product.diff: StringArray flags and ordered resolveSelectedFields loop",
+        "product.diff: exporter.Write remains reachable after field resolution without a selector/exporter conflict"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Unverified",
+      "justification": "Case-insensitive resolution, canonical headers, and actionable unknown-field errors are present. Ambiguous-ID candidates are collected in input/API order without sorting, so deterministic ordering is not established.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: unknown-name and unknown-ID candidates are sorted",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous IDs are appended without sort",
+        "product.diff: headers use field.Name()"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The normal path reuses definitions returned with items and safely returns errors before rendering, but it never paginates project fields when the initial field connection has another page.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields at LimitMax",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems paginates items only",
+        "product.diff: resolveSelectedFields receives project.Fields.Nodes directly"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All listed scalar, structured, and multi-value types have human-readable rendering, and missing/unknown values become empty. Raw text is returned without removing carriage returns or replacing newlines, so multiline cells can corrupt rows.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue covers date, number, select, text, iteration, milestone, repository, labels, pull requests, users, and reviewers",
+        "product.diff: DisplayValue returns raw text/date/title values with no CR/LF normalization"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected canonical headers are appended in request order; each row maps field values by field node ID and emits one cell for every selected field, preserving alignment and empty missing cells.",
+      "evidence": [
+        "product.diff: printResults builds headers from selected fields",
+        "product.diff: values[value.ID()] maps values by ID and the selected-field loop emits every cell",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Mutual-exclusion and resolution failures return before rendering. The change uses existing query types and table/exporter paths and is focused on field selection and display.",
+      "evidence": [
+        "product.diff: cmdutil.MutuallyExclusive is checked in RunE",
+        "product.diff: resolveSelectedFields errors return before exporter or printResults",
+        "tests.log: focused package test command exited 0"
+      ]
+    }
+  ],
+  "totalScore": 83,
+  "criticalGaps": [
+    "Selected fields do not conflict with explicit formatted/JSON output.",
+    "Requested fields beyond the first returned field-definition page cannot be resolved.",
+    "Field values are not normalized to remove carriage returns and replace newlines."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

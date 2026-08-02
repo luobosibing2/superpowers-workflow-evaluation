@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "canonical": {
+    "condition": "requirement-review-loops",
+    "run": "loop-01",
+    "pair": "pair-01",
+    "cohort": "slim-loops-v9-macos-rerun-loop01",
+    "sourceCandidate": "Candidate-A",
+    "status": "canonical",
+    "scoreN": 2,
+    "scores": [
+      100,
+      100
+    ],
+    "meanScore": 100,
+    "productDiffSha256": "a1a1192115345c4efdef39c53a6115591c991d3bad8d5b09a23a258d94b3be86",
+    "judgePackageDiffSha256": "a1a1192115345c4efdef39c53a6115591c991d3bad8d5b09a23a258d94b3be86"
+  },
+  "superseded": {
+    "condition": "requirement-review-loops",
+    "run": "loop-01",
+    "pair": "pair-01",
+    "cohort": "slim-loops-v9-macos",
+    "sourceCandidate": "Candidate-F",
+    "status": "superseded",
+    "scores": [
+      94,
+      93
+    ],
+    "meanScore": 93.5,
+    "productDiffSha256": "89467e52e89dd81619615e342f751bd4c56569ef24636482eaa8ba5f61c720a0"
+  },
+  "sameProductArtifact": false,
+  "pooled": false,
+  "causalClaim": false,
+  "note": "The user-approved canonical view replaces the original loop-01 product run; the original diff and verdicts remain separately auditable."
+}

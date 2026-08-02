@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-04",
+  "condition": "without",
+  "status": "completed",
+  "startedAtUtc": "2026-07-29T14:58:17.6186850Z",
+  "updatedAtUtc": "2026-07-29T15:10:30.0193400Z",
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "high",
+  "codexVersion": "codex-cli 0.145.0",
+  "host": {
+    "os": "Unix 26.5.2",
+    "powershell": "7.6.4"
+  },
+  "tokenSoftCap": 20000000,
+  "wallClockMinutes": 120,
+  "treatment": {
+    "bootstrapInjected": false,
+    "bootstrapSha256": null
+  },
+  "endedAtUtc": "2026-07-29T15:10:30.0193400Z",
+  "elapsedWallClockSeconds": 732.401,
+  "activeWallClockSeconds": 732.402,
+  "wallClockSeconds": 732.402,
+  "candidate": {
+    "turns": 1,
+    "finalMessage": "IMPLEMENTATION_COMPLETE",
+    "usage": {
+      "inputTokens": 3483156,
+      "cachedInputTokens": 3387648,
+      "outputTokens": 22449,
+      "reasoningOutputTokens": 9131,
+      "totalTokens": 3505605
+    },
+    "toolCalls": 33,
+    "toolCallsByType": {
+      "command_execution": 33
+    },
+    "modelActiveSeconds": 732.166
+  },
+  "operator": {
+    "turns": 0,
+    "usage": {
+      "inputTokens": 0,
+      "cachedInputTokens": 0,
+      "outputTokens": 0,
+      "reasoningOutputTokens": 0,
+      "totalTokens": 0
+    },
+    "toolCalls": 0,
+    "toolCallsByType": {},
+    "modelActiveSeconds": 0
+  },
+  "focusedTests": [
+    {
+      "command": "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries",
+      "exitCode": 0,
+      "log": "focused-test-01.log"
+    }
+  ]
+}

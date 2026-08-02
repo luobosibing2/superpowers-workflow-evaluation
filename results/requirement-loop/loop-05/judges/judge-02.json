@@ -1,0 +1,81 @@
+{
+  "candidate": "Candidate-B",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, and help example are implemented; focused package tests passed.",
+      "evidence": [
+        "product.diff: listOpts/flags and PreRunE hunks",
+        "product.diff: TestNewCmdList cases",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive resolution and actionable unknown-field errors are present, but ambiguous IDs retain input slice order rather than being sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go:65-88",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go:96-107",
+        "product.diff: resolve_fields_test ordering assertion"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected-field runs reuse initial definitions and paginate only when their connection has another page; unselected runs retain the original query path.",
+      "evidence": [
+        "product.diff: ProjectItemsWithFields/projectItems/appendProjectFieldPages hunks",
+        "product.diff: TestProjectItemsWithFields_PaginatesFieldDefinitions",
+        "tests.log: focused packages passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar and structured value variants are rendered, joined where needed, with text normalization and empty fallback.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue and normalizeFieldValue",
+        "product.diff: TestFieldValueDisplayValue",
+        "tests.log: focused packages passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "The reachable list path resolves selected fields, appends canonical headers, and performs each cell lookup by field ID, preserving empty cells.",
+      "evidence": [
+        "product.diff: runList, printResults, and itemFieldValue hunks",
+        "product.diff: TestPrintResults_SelectedFields"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Lookup and pagination errors return before rendering; the focused change uses existing query, resolver, exporter, and table helpers.",
+      "evidence": [
+        "product.diff: runList error returns and appendProjectFieldPages error handling",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go:65-107"
+      ]
+    }
+  ],
+  "totalScore": 96,
+  "criticalGaps": [
+    "Ambiguous name diagnostics do not sort candidate IDs, so their order depends on incoming field order."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

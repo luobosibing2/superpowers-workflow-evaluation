@@ -1,0 +1,91 @@
+{
+  "candidate": "Candidate-C",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 12,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags and table-only format conflict are implemented, but the two selection forms are accepted together.",
+      "evidence": [
+        "product.diff: StringArrayVar additions for --field and --field-id",
+        "product.diff: TestNewCmdList parses both flags in one invocation",
+        "product.diff: runList only rejects exporter use; no mutual-exclusion check",
+        "product.diff: help example repeats --field"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Unverified",
+      "justification": "Name matching is case-insensitive, headers use canonical names, and unknown-field errors include sorted candidates. Ambiguity is detected, but its ID list preserves returned connection order without explicit normalization.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: not-found and ID-not-found candidates are sorted",
+        "product.diff: printResults appends field.Name()",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous IDs are appended without sorting"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Normal resolution reuses field definitions returned with items and errors stop output, but extra pages are fetched only after initial resolution fails. The follow-up call is capped at LimitMax, so it cannot obtain fields beyond its first 100-node page.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests fields(first: $firstFields) with LimitMax",
+        "product.diff: selectedFields initially receives project.Fields.Nodes",
+        "product.diff: ProjectFields is conditional on err && HasNextPage",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: paginateAttributes stops when len(nodes) >= limit; call uses queries.LimitMax"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 23,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All listed scalar, structured, and multi-value variants have explicit renderers, and absent/unknown values become empty. No visible normalization removes carriage returns or replaces newlines before table output.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue switch covers date, iteration, labels, number, select, text, milestone, PRs, repository, users, and reviewers",
+        "product.diff: number uses strconv.FormatFloat(..., 'f', -1, 64)",
+        "product.diff: fieldValue returns \"\" when no matching field ID exists",
+        "product.diff: DisplayValue returns raw text/title/name strings without CR/LF normalization"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The reachable item-list path resolves fields before rendering, appends one header and one cell per selected field, and matches values by field ID. The focused test command passed.",
+      "evidence": [
+        "product.diff: runList calls selectedFields then printResults",
+        "product.diff: printResults appends headers and a value for every selected field",
+        "product.diff: fieldValue compares value.ID() with requested fieldID",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Resolver and pagination errors return before table rendering, and the focused diff uses existing query types and helpers. However, the invalid combined selection forms do not fail as required.",
+      "evidence": [
+        "product.diff: errors from selectedFields and ProjectFields return before printResults",
+        "product.diff: uses queries.ProjectField and FieldValueNodes.ID()",
+        "product.diff: no --field/--field-id mutual-exclusion validation",
+        "tests.log: focused package tests exited 0"
+      ]
+    }
+  ],
+  "totalScore": 86,
+  "criticalGaps": [
+    "--field and --field-id can be combined instead of failing clearly.",
+    "Field pagination does not always fetch a complete field list when extra columns are requested, and the fallback is capped at one page.",
+    "Selected values are not visibly sanitized for carriage returns and newlines."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

@@ -1,0 +1,86 @@
+{
+  "candidate": "Candidate-E",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Both repeatable flags and help are present, but the command accepts the two selection forms together and permits formatted export with selections.",
+      "evidence": [
+        "product.diff: registers StringArray --field and --field-id plus a repeated-field example",
+        "product.diff: selectedFields appends names and IDs without an exclusivity check; runList resolves fields before exporter.Write",
+        "product.diff: TestNewCmdList explicitly parses both flag forms together"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Unverified",
+      "justification": "Case-insensitive resolution, canonical names, and actionable unknown-field errors are implemented. Ambiguity is detected, but matching IDs are returned in source order without explicit deterministic sorting.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold and returns the canonical ProjectField",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: unknown name/ID errors build sorted candidate lists",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous-match IDs are appended without sorting"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The initial item query's field definitions are reused and lookup failures return before rendering. However, selected fields beyond the initial 100-definition page are never fetched.",
+      "evidence": [
+        "product.diff: runList resolves from project.Fields.Nodes without a preflight lookup",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields = LimitMax and paginates only ProjectItem nodes",
+        "product.diff: contains no field-pagination call or PageInfo handling"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 23,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All listed scalar, structured, and multi-value types are rendered, with empty output for absent IDs and unknown types. The supplied path does not establish carriage-return/newline normalization before table rendering.",
+      "evidence": [
+        "product.diff: fieldValueDisplay covers date, iteration, labels, number, select, text, milestone, PR, repository, users, and reviewers",
+        "product.diff: projectFieldValue returns an empty string when no value has the requested field ID",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected canonical headers are appended in request order; each item adds one cell per selected field by field node ID, preserving alignment and empty missing cells.",
+      "evidence": [
+        "product.diff: printResults appends field.Name() headers and adds one projectFieldValue per selected field",
+        "product.diff: projectFieldValue compares value.ID() with the selected field ID",
+        "baseline/pkg/cmd/project/item-list/item_list.go: unchanged owner/project/item command path remains reachable"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Project and field-resolution errors return before table output. The focused diff reuses established query types and table rendering, with passing supplied focused tests.",
+      "evidence": [
+        "product.diff: runList returns errors from ProjectItems and selectedFields before printResults",
+        "product.diff: uses queries.ProjectField and queries.FieldValueNodes rather than parallel data types",
+        "tests.log: focused item-list and shared-query package tests exited 0"
+      ]
+    }
+  ],
+  "totalScore": 84,
+  "criticalGaps": [
+    "--field and --field-id are not mutually exclusive, and field selections are silently ignored by formatted/JSON export.",
+    "Field definitions are limited to the first query page; selected fields on later pages cannot resolve.",
+    "Multiline value normalization is not established by the supplied candidate context.",
+    "Ambiguous field-ID candidates are not explicitly sorted."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

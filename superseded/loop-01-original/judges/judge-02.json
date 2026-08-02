@@ -1,0 +1,80 @@
+{
+  "candidate": "Candidate-F",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable selectors, conflicts, and help example are implemented while the no-selector path retains existing exporter/table handling.",
+      "evidence": [
+        "product.diff: listOpts and NewCmdList hunks",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive resolution, canonical names, and actionable unknown-field candidates are present, but ambiguous matching IDs retain source order rather than being sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByID"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Initial field definitions are reused; additional field and selected-value pages are fetched only when indicated, with errors returned before rendering.",
+      "evidence": [
+        "product.diff: CompleteProjectFields and CompleteProjectItemFieldValues",
+        "product.diff: TestRunList_SelectedFieldValueOnLaterPage",
+        "tests.log: focused package tests passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All listed scalar, structured, multi-value, missing, and unknown value mappings are visible, but the supplied path contains no explicit CR/LF normalization and table-printer behavior is not supplied.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue",
+        "product.diff: display_value_test.go"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Headers follow selected canonical fields, each row looks up values by field ID and emits an empty cell when absent; the existing runList path reaches this table renderer.",
+      "evidence": [
+        "product.diff: runList, printResults, and projectItemFieldValue",
+        "product.diff: TestPrintResults_WithSelectedFields",
+        "tests.log: focused package tests passed"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution and value-completion errors return before printResults; the focused changes use existing query/client structures and preserve the baseline command flow.",
+      "evidence": [
+        "product.diff: selectedFields, completeSelectedFieldValues, and runList",
+        "baseline/pkg/cmd/project/item-list/item_list.go: runList"
+      ]
+    }
+  ],
+  "totalScore": 93,
+  "criticalGaps": [
+    "Ambiguous --field diagnostics do not sort candidate IDs deterministically.",
+    "CR/LF normalization of selected values is not established by the supplied code or tests."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

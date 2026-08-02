@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "valid": true,
+  "canonicalRuns": 15,
+  "canonicalVerdicts": 30,
+  "verdictStructureAndDimensionSumsValid": 30,
+  "focusedTestsExitZero": 15,
+  "canonicalDiffsMatchJudgePackages": 15,
+  "supersededRuns": 1,
+  "supersededVerdicts": 2,
+  "statusDistribution": {
+    "completed": 14,
+    "tokenCap": 1
+  },
+  "scoreMeans": {
+    "without": 81.6667,
+    "slim": 83.1667,
+    "requirement-loop": 97.6667,
+    "requirement-review-loops": 99.5,
+    "full": 99
+  },
+  "verifiedVerdicts": {
+    "without": 0,
+    "slim": 0,
+    "requirement-loop": 0,
+    "requirement-review-loops": 4,
+    "full": 3
+  },
+  "fullyVerifiedRuns": {
+    "without": 0,
+    "slim": 0,
+    "requirement-loop": 0,
+    "requirement-review-loops": 1,
+    "full": 1
+  },
+  "sensitiveFiles": 0,
+  "absolutePublicationPaths": 0
+}

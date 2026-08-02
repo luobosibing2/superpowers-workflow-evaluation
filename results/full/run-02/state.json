@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "runId": "run-02",
+  "condition": "with",
+  "status": "token_cap",
+  "startedAtUtc": "2026-07-29T14:10:24.5167080Z",
+  "updatedAtUtc": "2026-07-29T14:58:14.7105770Z",
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "high",
+  "codexVersion": "codex-cli 0.145.0",
+  "host": {
+    "os": "Unix 26.5.2",
+    "powershell": "7.6.4"
+  },
+  "tokenSoftCap": 20000000,
+  "wallClockMinutes": 120,
+  "treatment": {
+    "bootstrapInjected": true,
+    "bootstrapSha256": "E4F57280AAD4DD61FBF0B2C6A449C6C1DB2EA6AAD0F1BBD45EE74D4BB963B10F"
+  },
+  "endedAtUtc": "2026-07-29T14:58:14.7105770Z",
+  "elapsedWallClockSeconds": 2870.195,
+  "activeWallClockSeconds": 2870.196,
+  "wallClockSeconds": 2870.196,
+  "candidate": {
+    "turns": 12,
+    "finalMessage": "Implementation complete. What would you like to do?\n\n1. Merge back to `baseline` locally\n2. Push and create a Pull Request\n3. Keep the branch as-is\n4. Discard this work\n\nOPERATOR_QUESTION: Which option?",
+    "usage": {
+      "inputTokens": 31425706,
+      "cachedInputTokens": 30550528,
+      "outputTokens": 126950,
+      "reasoningOutputTokens": 29525,
+      "totalTokens": 31552656
+    },
+    "toolCalls": 81,
+    "toolCallsByType": {
+      "command_execution": 45,
+      "collab_tool_call": 36
+    },
+    "modelActiveSeconds": 2771.707
+  },
+  "operator": {
+    "turns": 11,
+    "usage": {
+      "inputTokens": 1553129,
+      "cachedInputTokens": 1188864,
+      "outputTokens": 5087,
+      "reasoningOutputTokens": 2421,
+      "totalTokens": 1558216
+    },
+    "toolCalls": 0,
+    "toolCallsByType": {},
+    "modelActiveSeconds": 97.497
+  },
+  "focusedTests": [
+    {
+      "command": "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries",
+      "exitCode": 0,
+      "log": "focused-test-01.log"
+    }
+  ]
+}

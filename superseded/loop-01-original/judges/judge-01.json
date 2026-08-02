@@ -1,0 +1,77 @@
+{
+  "candidate": "Candidate-F",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Repeatable selectors, incompatibility checks, help example, and the no-selector/exporter path are reachable.",
+      "evidence": [
+        "product.diff: item-list flags and PreRunE hunk",
+        "product.diff: runList selector branch"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive matching and actionable unknown-field errors are present, but ambiguous IDs retain input/API order rather than being sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByID"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Initial definitions are reused and additional definition/value pages are fetched only as needed; the supplied package test command passed.",
+      "evidence": [
+        "product.diff: selectedFields, CompleteProjectFields, and CompleteProjectItemFieldValues hunks",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 23,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All requested value-type renderers and empty fallbacks are visible, but CR/LF normalization is not visible before table insertion.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue hunk",
+        "product.diff: projectItemFieldValue and printResults hunk"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Headers follow selected canonical fields, values are found by field ID, and missing values yield empty cells; the supplied item-list package test passed.",
+      "evidence": [
+        "product.diff: printResults and projectItemFieldValue hunk",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selection and pagination failures return before rendering, and the focused changes use existing query/client and table helpers.",
+      "evidence": [
+        "product.diff: runList, selectedFields, and completeSelectedFieldValues hunks"
+      ]
+    }
+  ],
+  "totalScore": 94,
+  "criticalGaps": [
+    "Ambiguous field-ID candidates are not deterministically sorted.",
+    "Selected values have no visible carriage-return/newline normalization."
+  ],
+  "overallValidation": "Unverified",
+  "confidence": "high"
+}

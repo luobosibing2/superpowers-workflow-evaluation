@@ -1,0 +1,87 @@
+{
+  "candidate": "Candidate-B",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags, ordering, and conflicts are implemented; zero-selection retains the original path. Help documents both flags but lacks the required repeated-field example.",
+      "evidence": [
+        "product.diff: item_list.go adds StringArray --field and --field-id plus conflict checks",
+        "product.diff: item_list.go preserves the original table path when no fields are selected",
+        "baseline/pkg/cmd/project/item-list/item_list.go: Example block contains no --field example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolvers match names case-insensitively, preserve canonical field objects for headers, provide sorted candidates, and sort ambiguous IDs.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolve_fields.go sorts ambiguous IDs",
+        "product.diff: fields_test.go covers case-insensitive resolution and deterministic ambiguity",
+        "tests.log: focused Go tests exited 0"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The initial item query’s field definitions are used directly unless their connection has another page; selected-field pagination uses ProjectFields and errors return before rendering.",
+      "evidence": [
+        "product.diff: item_list.go only calls ProjectFields when hasSelectedFields and Fields.PageInfo.HasNextPage",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields paginates field nodes",
+        "product.diff: TestRunList_SelectedFieldsCompletesPaginatedFields and TestRunList_DoesNotCompletePaginatedFieldsWithoutSelection",
+        "tests.log: focused Go tests exited 0"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All listed scalar, structured, and multi-value node types are rendered by field ID; absent/unknown nodes yield empty cells and CR/LF are normalized.",
+      "evidence": [
+        "product.diff: fields.go fieldValue switch and cellWhitespace replacer",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes.ID maps each supported node type to its field ID",
+        "product.diff: fields_test.go exercises all listed renderers, missing values, and newline normalization",
+        "tests.log: focused Go tests exited 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Canonical selected headers are appended in request order, and each row appends a value looked up by the selected field’s node ID, retaining empty cells.",
+      "evidence": [
+        "product.diff: item_list.go builds headers from selected fields and appends fieldValue(i, field.ID()) per row",
+        "product.diff: TestRunList_SelectedFields verifies two selected columns and values",
+        "tests.log: focused Go tests exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolution and pagination failures return before exporter/table output; the patch uses existing Project, ProjectFields, and tableprinter paths and is narrowly scoped.",
+      "evidence": [
+        "product.diff: item_list.go resolves fields before output",
+        "product.diff: TestRunList_SelectedFieldErrorsDoNotPrint asserts empty stdout on lookup and retrieval errors",
+        "tests.log: focused Go tests exited 0"
+      ]
+    }
+  ],
+  "totalScore": 99,
+  "criticalGaps": [
+    "The command help lacks the contract-required realistic repeated --field example."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

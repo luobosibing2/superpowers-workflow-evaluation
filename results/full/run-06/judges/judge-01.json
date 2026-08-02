@@ -1,0 +1,84 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags, ordering, mutual exclusion, and format conflict are implemented, but help lacks the required realistic repeated-field example.",
+      "evidence": [
+        "product.diff: item-list flag and RunE hunks",
+        "baseline/pkg/cmd/project/item-list/item_list.go: unchanged Example block",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Name resolution uses EqualFold, preserves canonical returned names for headers, and produces sorted actionable name/ID candidates; ambiguous IDs are sorted.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go",
+        "product.diff: resolveSelectedFields and ResolveFieldByName sorting hunk"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected fields reuse definitions from the item query, fetch subsequent field pages only when requested, and return retrieval errors before rendering.",
+      "evidence": [
+        "product.diff: ProjectItemsWithFields/projectItems pagination hunk",
+        "product.diff: TestProjectItems_PaginatesEveryFieldPageWhenAllFieldsRequested",
+        "product.diff: TestProjectItems_DoesNotPaginateFieldsWhenAllFieldsNotRequested",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 24,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All requested scalar and structured types render through ID-matched values, but carriage returns are replaced with spaces rather than removed.",
+      "evidence": [
+        "product.diff: renderFieldValue hunk",
+        "product.diff: TestRenderFieldValue and TestPrintResults_SelectedFields",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The command resolves selected fields before output, appends canonical headers in request order, and maps each row by field ID with empty missing cells.",
+      "evidence": [
+        "product.diff: runList and printResults hunks",
+        "product.diff: TestPrintResults_SelectedFields",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution and pagination errors return before table rendering; the patch extends existing query and table helpers without changing no-field output flow.",
+      "evidence": [
+        "product.diff: runList error paths",
+        "product.diff: queries.go pagination integration",
+        "baseline/pkg/cmd/project/item-list/item_list.go"
+      ]
+    }
+  ],
+  "totalScore": 98,
+  "criticalGaps": [
+    "Help does not include a realistic repeated --field/--field-id example.",
+    "CR characters are converted to spaces instead of being removed."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

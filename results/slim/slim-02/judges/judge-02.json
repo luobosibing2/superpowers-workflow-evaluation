@@ -1,0 +1,85 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Both repeatable flags preserve encounter order and help has an example, but mixed selection forms and formatted output are accepted rather than rejected.",
+      "evidence": [
+        "product.diff item_list.go: fieldSelectionFlag appends each occurrence to fieldSelections",
+        "product.diff item_list.go: no mutual-exclusion or exporter conflict validation is added",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Name matching is case-insensitive with canonical headers, and missing-field errors list sorted candidates. Ambiguous IDs retain returned connection order, so deterministic ordering is not ensured.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold and returns ProjectField",
+        "product.diff item_list.go: headers use selected field.Name()",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguity path does not sort ids"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Resolution reuses fields returned with ProjectItems and lookup errors occur before rendering. Field definitions beyond the initial page are never fetched.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields: LimitMax and paginates only items",
+        "product.diff item_list.go: runList resolves project.Fields.Nodes directly with no field-page continuation"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All listed scalar, structured, and multi-value types are rendered, with empty fallback for unknown values. Returned strings are not normalized for carriage returns or newlines.",
+      "evidence": [
+        "product.diff queries.go: FieldValueNodes.DisplayValue handles date, iteration, number, select, text, milestone, labels, PRs, repository, users, and reviewers",
+        "product.diff queries.go: DisplayValue returns raw text/title/name strings without CR/LF replacement",
+        "tests.log: focused query package tests passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected headers and cells are appended in the same requested-field order; each cell is located by field node ID and missing values return an empty string.",
+      "evidence": [
+        "product.diff item_list.go: printResults appends headers and per-row values for each selected field",
+        "product.diff item_list.go: fieldValue compares value.ID() to fieldID and falls back to empty",
+        "tests.log: item-list package tests passed"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 12,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Lookup errors stop before table rendering and the implementation uses established query types and helpers. Required invalid-flag conflicts are not rejected, allowing a selection to be ignored by formatted output.",
+      "evidence": [
+        "product.diff item_list.go: resolveSelectedFields returns before exporter/table output on lookup error",
+        "product.diff item_list.go: exporter.Write remains reachable with nonempty fieldSelections",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: typed actionable resolver errors"
+      ]
+    }
+  ],
+  "totalScore": 80,
+  "criticalGaps": [
+    "--field and --field-id are not mutually exclusive, and neither conflicts with formatted/JSON output.",
+    "Selected fields beyond the first returned field-definition page cannot be resolved.",
+    "Multiline field values are passed to the table without CR/LF normalization.",
+    "Ambiguous field-ID diagnostics are not deterministically ordered."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

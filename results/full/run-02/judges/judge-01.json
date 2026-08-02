@@ -1,0 +1,82 @@
+{
+  "candidate": "Candidate-D",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable selectors, clear conflicts, and help example are implemented; no-selector flow is retained.",
+      "evidence": [
+        "product.diff: item_list.go adds StringArray --field/--field-id, mutual-exclusion and format conflict checks, and repeated-field example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolvers perform case-insensitive matching, canonical-name headers, sorted actionable candidates, and deterministic ambiguity errors.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolveSelectedFields uses resolvers and headers use field.Name()",
+        "tests.log: focused package tests exited 0"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The item query's returned fields are reused, further pages are fetched only for selectors, and errors return before rendering.",
+      "evidence": [
+        "product.diff: item_list.go resolveSelectedFields conditionally calls ProjectFieldsAfter",
+        "product.diff: queries.go ProjectFieldsAfter appends and paginates from initial cursor",
+        "product.diff: tests cover completing field pages and avoiding it without selected fields",
+        "tests.log: focused package tests exited 0"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value types are rendered, with empty fallback and CR/LF normalization.",
+      "evidence": [
+        "product.diff: item_list.go formatFieldValue handles text, number, date, select, iteration, milestone, labels, PRs, repository, users, and reviewers",
+        "product.diff: sanitizeTableCell removes carriage returns and replaces newlines",
+        "tests.log: focused package tests exited 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected canonical headers are appended in request order; each item is queried by field ID and emits one cell per selected field.",
+      "evidence": [
+        "product.diff: runList resolves fields then calls printResults with them",
+        "product.diff: printResults appends headers and invokes formatFieldValue for every selected field",
+        "product.diff: end-to-end selector-order test asserts extended rendered table",
+        "tests.log: focused package tests exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution and pagination errors are returned before table construction; the focused changes reuse existing query/client types and preserve the established command path.",
+      "evidence": [
+        "product.diff: runList returns resolveSelectedFields errors before printResults",
+        "product.diff: resolveSelectedFields returns ProjectFieldsAfter and resolver errors",
+        "baseline/pkg/cmd/project/item-list/item_list.go: existing owner/project/item and exporter flow retained"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}

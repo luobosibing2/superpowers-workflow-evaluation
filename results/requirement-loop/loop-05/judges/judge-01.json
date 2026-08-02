@@ -1,0 +1,81 @@
+{
+  "candidate": "Candidate-B",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Adds repeatable name/ID flags, clear conflicts, a repeated-field example, and retains the no-selection path.",
+      "evidence": [
+        "product.diff (item_list.go flag, PreRunE, runList, and Example hunks)",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Unverified",
+      "justification": "Case-insensitive resolution, canonical headers, and actionable unknown-field errors are present. Ambiguous IDs follow supplied field order without explicit sorting, so cross-response deterministic ordering is not established.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolveSelectedFields hunk",
+        "tests.log: focused Go test command (exit 0)"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected-field requests reuse field definitions from the item query and paginate only when the field connection has another page.",
+      "evidence": [
+        "product.diff: ProjectItemsWithFields, projectItems, and appendProjectFieldPages hunks",
+        "tests.log: focused Go test command (exit 0)"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "Covers required scalar, structured, and multi-value renderers; unmatched values are empty and CR/LF is normalized.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue and normalizeFieldValue hunks",
+        "product.diff: TestFieldValueDisplayValue hunk",
+        "tests.log: focused Go test command (exit 0)"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Canonical headers and ID-matched values append in requested order; each selected field adds a cell, preserving alignment when missing.",
+      "evidence": [
+        "product.diff: runList, printResults, and itemFieldValue hunks",
+        "product.diff: TestPrintResults_SelectedFields hunk",
+        "tests.log: focused Go test command (exit 0)"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution and pagination errors return before rendering; the change uses existing project query types and leaves unselected behavior on the prior path.",
+      "evidence": [
+        "product.diff: runList and projectItems error-return hunks",
+        "baseline/pkg/cmd/project/item-list/item_list.go: prior unselected command path",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: existing project query helpers"
+      ]
+    }
+  ],
+  "totalScore": 98,
+  "criticalGaps": [
+    "Ambiguous field-ID candidates are not explicitly sorted; deterministic ordering across arbitrary field-definition response order is unverified."
+  ],
+  "overallValidation": "Unverified",
+  "confidence": "high"
+}

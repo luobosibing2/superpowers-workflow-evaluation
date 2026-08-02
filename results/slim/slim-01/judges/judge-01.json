@@ -1,0 +1,85 @@
+{
+  "candidate": "Candidate-B",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags, ordering, mutual exclusion, help examples, and unchanged no-selection output are present; formatted output is not rejected when fields are selected.",
+      "evidence": [
+        "product.diff: listOpts/flags and RunE mutual-exclusion hunk",
+        "product.diff: runList resolves selections before exporter.Write without a format conflict",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Name matching is case-insensitive and canonical names become headers; unknown-field candidates are actionable and sorted, but ambiguous matching IDs retain source order rather than deterministic sorting.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolveSelectedFields and header construction",
+        "tests.log: focused Go test command (exit 0)"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Resolution reuses ProjectItems field definitions, but no path fetches subsequent field-definition pages when Fields.PageInfo.HasNextPage is true.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields=LimitMax and returns project.Fields",
+        "product.diff: runList resolves only project.Fields.Nodes; no pagination call added"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 23,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All specified scalar, structured, and multi-value types are rendered, with unknown types empty; raw text/date/title values are not normalized to remove carriage returns or replace newlines.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue switch",
+        "product.diff: DisplayValue unit tests",
+        "tests.log: focused Go test command (exit 0)"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected canonical headers follow request order; rows map values by field ID and append an empty lookup result for missing values through the existing runList path.",
+      "evidence": [
+        "product.diff: runList → resolveSelectedFields → printResults",
+        "product.diff: printResults values[value.ID()] and field.ID() lookup",
+        "baseline/pkg/cmd/project/item-list/item_list.go: existing item-list command path"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selection errors return before exporter/table output, and the focused diff uses existing query types and resolver helpers without unrelated path changes.",
+      "evidence": [
+        "product.diff: RunE mutual exclusion and runList error returns",
+        "product.diff: resolveSelectedFields error propagation before exporter.Write/printResults",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go"
+      ]
+    }
+  ],
+  "totalScore": 85,
+  "criticalGaps": [
+    "Selected fields are silently ignored with explicit formatted/JSON output instead of producing a flag-conflict error.",
+    "Field-definition pagination is absent, so fields beyond the first returned page cannot be selected.",
+    "Multiline field values are passed to the table unchanged.",
+    "Ambiguous field-ID diagnostics are not explicitly sorted."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

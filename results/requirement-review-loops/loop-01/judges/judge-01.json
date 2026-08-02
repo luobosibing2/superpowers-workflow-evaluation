@@ -1,0 +1,82 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, and a repeated-field help example are implemented; focused tests pass.",
+      "evidence": [
+        "product.diff: item-list flags and validateListOpts",
+        "product.diff: TestNewCmdList_FieldSelection",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Name matching is case-insensitive; canonical selected fields supply headers; candidate-rich unknown and sorted ambiguous errors are reachable.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: sorted ambiguous candidate IDs",
+        "product.diff: TestSelectedFields_CaseInsensitiveAndRepeated",
+        "tests.log: focused package tests pass"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The initial field page is reused, extra pages are fetched only when indicated, and pagination errors return before rendering.",
+      "evidence": [
+        "product.diff: CompleteProjectFields",
+        "product.diff: TestCompleteProjectFields",
+        "product.diff: selectedFields resolves before printResults",
+        "tests.log: focused package tests pass"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Static",
+      "justification": "Reachable type switch renders every specified scalar, structured, and multi-value type; missing/unknown values are empty and line breaks are normalized.",
+      "evidence": [
+        "product.diff: fieldValueText",
+        "product.diff: projectFieldValue and normalizeFieldValue",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes and ID"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected canonical headers and ID-matched cells are appended for every item, including empty cells, through the existing runList table path.",
+      "evidence": [
+        "product.diff: runList → selectedFields → printResults",
+        "product.diff: TestPrintResults_SelectedFieldsUseIDsAndRequestedOrder",
+        "tests.log: focused package tests pass"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Validation and resolution occur before table output; retrieval errors propagate. The focused diff uses existing query, command, and table helpers without altering unselected behavior.",
+      "evidence": [
+        "product.diff: validateListOpts, selectedFields, and runList",
+        "baseline/pkg/cmd/project/item-list/item_list.go: existing owner/project/items/exporter path"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}

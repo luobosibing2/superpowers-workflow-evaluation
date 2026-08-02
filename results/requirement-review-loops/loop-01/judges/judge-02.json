@@ -1,0 +1,81 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, help example, and unchanged no-selection paths are present.",
+      "evidence": [
+        "product.diff: item_list.go flag additions and validateListOpts",
+        "product.diff: TestNewCmdList_FieldSelection",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Case-insensitive resolution uses canonical selected fields; unknown and ambiguous cases provide sorted actionable candidates.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go",
+        "product.diff: resolve_fields.go ambiguity ID sorting hunk",
+        "product.diff: selectedFields"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Initial definitions are reused; additional field pages are fetched only when indicated, with errors returned before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests initial fields",
+        "product.diff: CompleteProjectFields",
+        "product.diff: TestCompleteProjectFields",
+        "tests.log: focused project query tests passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Static",
+      "justification": "All required scalar, structured, and multi-value types are rendered, normalized, and default to empty when absent or unknown.",
+      "evidence": [
+        "product.diff: fieldValueText, projectFieldValue, normalizeFieldValue",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes and ID()"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected canonical headers and values are appended in request order; lookup by field node ID preserves empty cells and alignment.",
+      "evidence": [
+        "product.diff: runList → selectedFields → printResults",
+        "product.diff: TestPrintResults_SelectedFieldsUseIDsAndRequestedOrder",
+        "baseline/pkg/cmd/project/item-list/item_list.go: existing command path"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selection and pagination errors return before table construction; the implementation uses existing query types, pagination helper, and table printer.",
+      "evidence": [
+        "product.diff: selectedFields error returns before printResults",
+        "product.diff: CompleteProjectFields error handling",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: paginateAttributes"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}

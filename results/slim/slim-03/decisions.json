@@ -1,0 +1,12 @@
+{
+  "operator": [
+    {
+      "timestampUtc": "2026-07-31T12:36:37.1039250Z",
+      "candidateTurn": 1,
+      "question": "If `--field` and `--field-id` are interleaved, should the added table columns follow the exact order in which those flags appear on the command line?",
+      "answer": "OPERATOR_ANSWER: No. The two flags cannot be combined; the command should fail clearly."
+    }
+  ],
+  "design": [],
+  "review": []
+}

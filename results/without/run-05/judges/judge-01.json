@@ -1,0 +1,86 @@
+{
+  "candidate": "Candidate-F",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags and help example are present, but both selection forms are accepted together and formatted output is still written rather than rejected.",
+      "evidence": [
+        "product.diff: adds StringArray --field and --field-id flags plus repeated --field example",
+        "product.diff: TestNewCmdList parses --field and --field-id together; tests.log records the package test pass",
+        "product.diff: runList resolves selections, then calls exporter.Write when an exporter is set"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolvers provide case-insensitive lookup, canonical returned fields, and sorted actionable unknown-field candidates. Ambiguity is detected, but matching IDs are not sorted before reporting.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold and returns the selected ProjectField",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: unknown names and IDs build sorted candidate lists",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: FieldAmbiguousError appends IDs in input order without sorting"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Resolution reuses fields returned by ProjectItems and errors occur before rendering, but no path paginates the project field connection when it has another page.",
+      "evidence": [
+        "product.diff: runList resolves project.Fields.Nodes immediately after ProjectItems",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems paginates only firstItems/afterItems via pager[ProjectItem]",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields contains separate field pagination, but product.diff never calls it"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Static",
+      "justification": "All listed scalar, structured, and multi-value type branches render the requested human-readable members; absent and unknown values return empty. Added rendering passes text through unchanged, so newline/carriage-return normalization is not evidenced.",
+      "evidence": [
+        "product.diff: projectFieldValue handles date, number, single-select, text, iteration, milestone, repository, labels, pull requests, users, and reviewers",
+        "product.diff: projectFieldValue returns an empty string when no matching or known value is found",
+        "product.diff: text/date/title values are returned directly, with no CR/LF replacement"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected canonical headers and per-item cells are appended in the same requested-field loop; lookup is by field ID and every selected field supplies a cell.",
+      "evidence": [
+        "product.diff: printResults appends field.Name headers and one projectFieldValue call per selected field per item",
+        "product.diff: projectFieldValue compares value.ID() with field.ID() and returns an empty cell if unmatched",
+        "product.diff: TestPrintResults_WithSelectedFields and TestRunList_FieldSelectionsUseProjectItemsResponse; tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Lookup errors return before table output and the change uses existing query data and resolver helpers, but invalid combined/formatted selections can proceed to output instead of failing clearly.",
+      "evidence": [
+        "product.diff: resolveSelectedFields errors return before exporter or printResults",
+        "product.diff: runList calls exporter.Write after accepting selected fields",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: existing shared field-resolution helpers are used"
+      ]
+    }
+  ],
+  "totalScore": 79,
+  "criticalGaps": [
+    "No mutual exclusion between --field and --field-id, and no conflict with formatted/JSON output.",
+    "Selected fields beyond the first returned field-definition page are never retrieved.",
+    "Ambiguous candidate IDs are not explicitly sorted.",
+    "Multiline field-value normalization is not implemented in the added rendering path."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

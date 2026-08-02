@@ -1,0 +1,342 @@
+diff --git a/pkg/cmd/project/item-list/item_list.go b/pkg/cmd/project/item-list/item_list.go
+index 1ff4c55..a77cf56 100644
+--- a/pkg/cmd/project/item-list/item_list.go
++++ b/pkg/cmd/project/item-list/item_list.go
+@@ -21,6 +21,8 @@ type listOpts struct {
+ 	owner    string
+ 	number   int32
+ 	query    string
++	fields   []string
++	fieldIDs []string
+ 	exporter cmdutil.Exporter
+ }
+ 
+@@ -55,6 +57,9 @@ func NewCmdList(f *cmdutil.Factory, runF func(config listConfig) error) *cobra.C
+ 
+ 			# List items with the "bug" label that are not done
+ 			$ gh project item-list 1 --owner "@me" --query "label:bug -status:Done"
++
++			# Include selected project fields as table columns
++			$ gh project item-list 1 --owner "@me" --field "Status" --field "Assignees"
+ 		`),
+ 		Args: cobra.MaximumNArgs(1),
+ 		RunE: func(cmd *cobra.Command, args []string) error {
+@@ -101,6 +106,8 @@ func NewCmdList(f *cmdutil.Factory, runF func(config listConfig) error) *cobra.C
+ 
+ 	listCmd.Flags().StringVar(&opts.owner, "owner", "", "Login of the owner. Use \"@me\" for the current user")
+ 	listCmd.Flags().StringVar(&opts.query, "query", "", `Filter items using the Projects filter syntax, e.g. "assignee:octocat -status:Done"`)
++	listCmd.Flags().StringArrayVar(&opts.fields, "field", nil, "Field name to include as a table column")
++	listCmd.Flags().StringArrayVar(&opts.fieldIDs, "field-id", nil, "Field ID to include as a table column")
+ 	cmdutil.AddFormatFlags(listCmd, &opts.exporter)
+ 	listCmd.Flags().IntVarP(&opts.limit, "limit", "L", queries.LimitDefault, "Maximum number of items to fetch")
+ 
+@@ -117,6 +124,9 @@ func runList(config listConfig) error {
+ 			return fmt.Errorf("the `--query` flag is not supported on this GitHub host")
+ 		}
+ 	}
++	if config.opts.exporter != nil && (len(config.opts.fields) > 0 || len(config.opts.fieldIDs) > 0) {
++		return cmdutil.FlagErrorf("`--field` and `--field-id` can only be used with table output")
++	}
+ 
+ 	canPrompt := config.io.CanPrompt()
+ 	owner, err := config.client.NewOwner(canPrompt, config.opts.owner)
+@@ -138,19 +148,53 @@ func runList(config listConfig) error {
+ 		return err
+ 	}
+ 
++	fields, err := selectedFields(config.opts, project.Fields.Nodes)
++	if err != nil && project.Fields.PageInfo.HasNextPage {
++		fieldsProject, fieldsErr := config.client.ProjectFields(owner, config.opts.number, queries.LimitMax)
++		if fieldsErr != nil {
++			return fieldsErr
++		}
++		fields, err = selectedFields(config.opts, fieldsProject.Fields.Nodes)
++	}
++	if err != nil {
++		return err
++	}
+ 	if config.opts.exporter != nil {
+ 		return config.opts.exporter.Write(config.io, project.DetailedItems())
+ 	}
+ 
+-	return printResults(config, project.Items.Nodes, owner.Login)
++	return printResults(config, project.Items.Nodes, fields, owner.Login)
+ }
+ 
+-func printResults(config listConfig, items []queries.ProjectItem, login string) error {
++func selectedFields(opts listOpts, fields []queries.ProjectField) ([]queries.ProjectField, error) {
++	selected := make([]queries.ProjectField, 0, len(opts.fields)+len(opts.fieldIDs))
++	for _, name := range opts.fields {
++		field, err := queries.ResolveFieldByName(fields, name)
++		if err != nil {
++			return nil, err
++		}
++		selected = append(selected, field)
++	}
++	for _, id := range opts.fieldIDs {
++		field, err := queries.ResolveFieldByID(fields, id)
++		if err != nil {
++			return nil, err
++		}
++		selected = append(selected, field)
++	}
++	return selected, nil
++}
++
++func printResults(config listConfig, items []queries.ProjectItem, fields []queries.ProjectField, login string) error {
+ 	if len(items) == 0 {
+ 		return cmdutil.NewNoResultsError(fmt.Sprintf("Project %d for owner %s has no items", config.opts.number, login))
+ 	}
+ 
+-	tp := tableprinter.New(config.io, tableprinter.WithHeader("Type", "Title", "Number", "Repository", "ID"))
++	header := []string{"Type", "Title", "Number", "Repository", "ID"}
++	for _, field := range fields {
++		header = append(header, field.Name())
++	}
++	tp := tableprinter.New(config.io, tableprinter.WithHeader(header...))
+ 
+ 	for _, i := range items {
+ 		tp.AddField(i.Type())
+@@ -162,8 +206,20 @@ func printResults(config listConfig, items []queries.ProjectItem, login string)
+ 		}
+ 		tp.AddField(i.Repo())
+ 		tp.AddField(i.ID(), tableprinter.WithTruncate(nil))
++		for _, field := range fields {
++			tp.AddField(fieldValue(i, field.ID()))
++		}
+ 		tp.EndRow()
+ 	}
+ 
+ 	return tp.Render()
+ }
++
++func fieldValue(item queries.ProjectItem, fieldID string) string {
++	for _, value := range item.FieldValues.Nodes {
++		if value.ID() == fieldID {
++			return value.DisplayValue()
++		}
++	}
++	return ""
++}
+diff --git a/pkg/cmd/project/item-list/item_list_test.go b/pkg/cmd/project/item-list/item_list_test.go
+index a9df420..41a8cdb 100644
+--- a/pkg/cmd/project/item-list/item_list_test.go
++++ b/pkg/cmd/project/item-list/item_list_test.go
+@@ -11,6 +11,7 @@ import (
+ 	"github.com/google/shlex"
+ 
+ 	"github.com/stretchr/testify/assert"
++	"github.com/stretchr/testify/require"
+ 	"gopkg.in/h2non/gock.v1"
+ )
+ 
+@@ -22,6 +23,8 @@ func TestNewCmdList(t *testing.T) {
+ 		wantsErr      bool
+ 		wantsErrMsg   string
+ 		wantsExporter bool
++		wantsFields   []string
++		wantsFieldIDs []string
+ 	}{
+ 		{
+ 			name:        "not-a-number",
+@@ -61,6 +64,15 @@ func TestNewCmdList(t *testing.T) {
+ 				query: "assignee:octocat",
+ 			},
+ 		},
++		{
++			name: "fields",
++			cli:  "--field Status --field priority --field-id PVTSSF_status",
++			wants: listOpts{
++				limit: 30,
++			},
++			wantsFields:   []string{"Status", "priority"},
++			wantsFieldIDs: []string{"PVTSSF_status"},
++		},
+ 	}
+ 
+ 	t.Setenv("GH_TOKEN", "auth-token")
+@@ -93,12 +105,67 @@ func TestNewCmdList(t *testing.T) {
+ 			assert.Equal(t, tt.wants.number, gotOpts.number)
+ 			assert.Equal(t, tt.wants.owner, gotOpts.owner)
+ 			assert.Equal(t, tt.wants.query, gotOpts.query)
++			assert.Equal(t, tt.wantsFields, gotOpts.fields)
++			assert.Equal(t, tt.wantsFieldIDs, gotOpts.fieldIDs)
+ 			assert.Equal(t, tt.wantsExporter, gotOpts.exporter != nil)
+ 			assert.Equal(t, tt.wants.limit, gotOpts.limit)
+ 		})
+ 	}
+ }
+ 
++func TestSelectedFieldsAndPrintResults(t *testing.T) {
++	status := queries.ProjectField{TypeName: "ProjectV2SingleSelectField"}
++	status.SingleSelectField.ID = "PVTSSF_status"
++	status.SingleSelectField.Name = "Status"
++	labels := queries.ProjectField{TypeName: "ProjectV2Field"}
++	labels.Field.ID = "PVTF_labels"
++	labels.Field.Name = "Labels"
++
++	fields, err := selectedFields(listOpts{
++		fields:   []string{"status"},
++		fieldIDs: []string{"PVTF_labels"},
++	}, []queries.ProjectField{status, labels})
++	require.NoError(t, err)
++	assert.Equal(t, []queries.ProjectField{status, labels}, fields)
++
++	item := queries.ProjectItem{Id: "item ID"}
++	item.Content.TypeName = "Issue"
++	item.Content.Issue.Title = "an issue"
++	item.Content.Issue.Number = 1
++	item.Content.Issue.Repository.NameWithOwner = "cli/go-gh"
++
++	statusValue := queries.FieldValueNodes{Type: "ProjectV2ItemFieldSingleSelectValue"}
++	statusValue.ProjectV2ItemFieldSingleSelectValue.Name = "In Progress"
++	statusValue.ProjectV2ItemFieldSingleSelectValue.Field = status
++	labelsValue := queries.FieldValueNodes{Type: "ProjectV2ItemFieldLabelValue"}
++	labelsValue.ProjectV2ItemFieldLabelValue.Field = labels
++	labelsValue.ProjectV2ItemFieldLabelValue.Labels.Nodes = []struct{ Name string }{
++		{Name: "bug"},
++		{Name: "urgent"},
++	}
++	item.FieldValues.Nodes = []queries.FieldValueNodes{statusValue, labelsValue}
++
++	ios, _, stdout, _ := iostreams.Test()
++	err = printResults(listConfig{
++		opts: listOpts{number: 1},
++		io:   ios,
++	}, []queries.ProjectItem{item}, fields, "monalisa")
++	require.NoError(t, err)
++	assert.Equal(t, "Issue\tan issue\t1\tcli/go-gh\titem ID\tIn Progress\tbug, urgent\n", stdout.String())
++}
++
++func TestSelectedFieldsErrors(t *testing.T) {
++	status := queries.ProjectField{TypeName: "ProjectV2SingleSelectField"}
++	status.SingleSelectField.ID = "PVTSSF_status"
++	status.SingleSelectField.Name = "Status"
++
++	_, err := selectedFields(listOpts{fields: []string{"missing"}}, []queries.ProjectField{status})
++	require.EqualError(t, err, `field "missing" not found in project; available fields: Status`)
++
++	_, err = selectedFields(listOpts{fieldIDs: []string{"missing"}}, []queries.ProjectField{status})
++	require.EqualError(t, err, `field with ID "missing" not found in project; available fields: Status (PVTSSF_status)`)
++}
++
+ func TestRunList_User_tty(t *testing.T) {
+ 	defer gock.Off()
+ 	// gock.Observe(gock.DumpRequest)
+@@ -689,6 +756,30 @@ func TestRunList_WithQuery(t *testing.T) {
+ 											"nameWithOwner": "cli/go-gh",
+ 										},
+ 									},
++									"fieldValues": map[string]interface{}{
++										"nodes": []map[string]interface{}{
++											{
++												"__typename": "ProjectV2ItemFieldSingleSelectValue",
++												"name":       "In Progress",
++												"field": map[string]interface{}{
++													"__typename": "ProjectV2SingleSelectField",
++													"id":         "PVTSSF_status",
++													"name":       "Status",
++													"dataType":   "SINGLE_SELECT",
++												},
++											},
++										},
++									},
++								},
++							},
++						},
++						"fields": map[string]interface{}{
++							"nodes": []map[string]interface{}{
++								{
++									"__typename": "ProjectV2SingleSelectField",
++									"id":         "PVTSSF_status",
++									"name":       "Status",
++									"dataType":   "SINGLE_SELECT",
+ 								},
+ 							},
+ 						},
+@@ -705,6 +796,7 @@ func TestRunList_WithQuery(t *testing.T) {
+ 			number: 1,
+ 			owner:  "monalisa",
+ 			query:  "assignee:octocat -status:Done",
++			fields: []string{"status"},
+ 		},
+ 		client:   client,
+ 		detector: &fd.EnabledDetectorMock{},
+@@ -715,7 +807,7 @@ func TestRunList_WithQuery(t *testing.T) {
+ 	assert.NoError(t, err)
+ 	assert.Equal(
+ 		t,
+-		"Issue\tan issue\t1\tcli/go-gh\tissue ID\n",
++		"Issue\tan issue\t1\tcli/go-gh\tissue ID\tIn Progress\n",
+ 		stdout.String())
+ }
+ 
+diff --git a/pkg/cmd/project/shared/queries/queries.go b/pkg/cmd/project/shared/queries/queries.go
+index a9abbd8..6ef50e7 100644
+--- a/pkg/cmd/project/shared/queries/queries.go
++++ b/pkg/cmd/project/shared/queries/queries.go
+@@ -6,6 +6,7 @@ import (
+ 	"net/http"
+ 	"net/url"
+ 	"regexp"
++	"strconv"
+ 	"strings"
+ 
+ 	"github.com/cli/cli/v2/api"
+@@ -472,6 +473,56 @@ func (v FieldValueNodes) ID() string {
+ 	return ""
+ }
+ 
++// DisplayValue returns a human-readable representation of a project field value.
++func (v FieldValueNodes) DisplayValue() string {
++	switch v.Type {
++	case "ProjectV2ItemFieldDateValue":
++		return v.ProjectV2ItemFieldDateValue.Date
++	case "ProjectV2ItemFieldIterationValue":
++		return v.ProjectV2ItemFieldIterationValue.Title
++	case "ProjectV2ItemFieldLabelValue":
++		names := make([]string, 0, len(v.ProjectV2ItemFieldLabelValue.Labels.Nodes))
++		for _, label := range v.ProjectV2ItemFieldLabelValue.Labels.Nodes {
++			names = append(names, label.Name)
++		}
++		return strings.Join(names, ", ")
++	case "ProjectV2ItemFieldNumberValue":
++		return strconv.FormatFloat(v.ProjectV2ItemFieldNumberValue.Number, 'f', -1, 64)
++	case "ProjectV2ItemFieldSingleSelectValue":
++		return v.ProjectV2ItemFieldSingleSelectValue.Name
++	case "ProjectV2ItemFieldTextValue":
++		return v.ProjectV2ItemFieldTextValue.Text
++	case "ProjectV2ItemFieldMilestoneValue":
++		return v.ProjectV2ItemFieldMilestoneValue.Milestone.Title
++	case "ProjectV2ItemFieldPullRequestValue":
++		urls := make([]string, 0, len(v.ProjectV2ItemFieldPullRequestValue.PullRequests.Nodes))
++		for _, pullRequest := range v.ProjectV2ItemFieldPullRequestValue.PullRequests.Nodes {
++			urls = append(urls, pullRequest.Url)
++		}
++		return strings.Join(urls, ", ")
++	case "ProjectV2ItemFieldRepositoryValue":
++		return v.ProjectV2ItemFieldRepositoryValue.Repository.Url
++	case "ProjectV2ItemFieldUserValue":
++		logins := make([]string, 0, len(v.ProjectV2ItemFieldUserValue.Users.Nodes))
++		for _, user := range v.ProjectV2ItemFieldUserValue.Users.Nodes {
++			logins = append(logins, user.Login)
++		}
++		return strings.Join(logins, ", ")
++	case "ProjectV2ItemFieldReviewerValue":
++		names := make([]string, 0, len(v.ProjectV2ItemFieldReviewerValue.Reviewers.Nodes))
++		for _, reviewer := range v.ProjectV2ItemFieldReviewerValue.Reviewers.Nodes {
++			switch reviewer.Type {
++			case "Team":
++				names = append(names, reviewer.Team.Name)
++			case "User":
++				names = append(names, reviewer.User.Login)
++			}
++		}
++		return strings.Join(names, ", ")
++	}
++	return ""
++}
++
+ type DraftIssue struct {
+ 	ID    string
+ 	Body  string

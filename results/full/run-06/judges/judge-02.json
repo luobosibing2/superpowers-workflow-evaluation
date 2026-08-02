@@ -1,0 +1,79 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Repeatable selectors, conflicts, and the unchanged no-selector path are present, but help lacks the requested repeated-field example.",
+      "evidence": [
+        "product.diff: item_list.go flag registration and RunE validation",
+        "baseline/pkg/cmd/project/item-list/item_list.go: command examples"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolvers provide case-insensitive matching, canonical headers, actionable sorted candidates, and deterministic ambiguity IDs.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go",
+        "product.diff: resolve_fields.go ambiguity-ID sort",
+        "product.diff: item_list.go resolveSelectedFields"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The selected-field path reuses item-query definitions and paginates fields only when requested; the focused test command passed.",
+      "evidence": [
+        "product.diff: queries.go ProjectItemsWithFields and projectFieldPager",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 24,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All listed value kinds, ID lookup, and empty unknown values are handled, but CR is converted to a space rather than removed.",
+      "evidence": [
+        "product.diff: item_list.go renderFieldValue",
+        "product.diff: item_list.go strings.NewReplacer(\"\\r\", \" \", \"\\n\", \" \")"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolved fields drive ordered headers; each item maps values by field ID and emits a cell for every selection.",
+      "evidence": [
+        "product.diff: item_list.go runList and printResults",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes.ID"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selector and field-query errors return before rendering; the change uses existing query and table paths.",
+      "evidence": [
+        "product.diff: item_list.go runList error returns",
+        "product.diff: queries.go pagination error returns"
+      ]
+    }
+  ],
+  "totalScore": 98,
+  "criticalGaps": [
+    "Help lacks the required realistic repeated-field example.",
+    "CR characters are replaced with spaces rather than removed."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

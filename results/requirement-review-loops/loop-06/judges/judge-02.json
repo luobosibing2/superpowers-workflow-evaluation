@@ -1,0 +1,80 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, preserved empty-selection path, and help example are implemented and covered by the focused package test.",
+      "evidence": [
+        "product.diff: item-list flags and command example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolution uses case-insensitive names, canonical field objects, candidate-bearing errors, and sorted ambiguity IDs.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go",
+        "product.diff: ResolveFieldByName sorts ambiguous IDs",
+        "tests.log: focused query and item-list packages pass"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The existing item query supplies initial fields; continuation is gated on selection and loops remaining field pages, returning errors before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems",
+        "product.diff: CompleteProjectFields and selected-field run tests",
+        "tests.log: focused tests pass"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value types are rendered, with empty unknown values and newline normalization.",
+      "evidence": [
+        "product.diff: formatFieldValue and normalizeTableText",
+        "product.diff: TestFormatFieldValue",
+        "tests.log: focused tests pass"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected headers and cells are appended in request order; lookup compares field node IDs and emits an empty cell when absent.",
+      "evidence": [
+        "product.diff: printResults and fieldValueForID",
+        "product.diff: TestPrintResults_SelectedFields and TestRunList_SelectedFieldUsesEmbeddedFieldDefinitions",
+        "tests.log: focused tests pass"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolution and pagination failures return before output; the change reuses existing query types and remains focused on item listing and shared field queries.",
+      "evidence": [
+        "product.diff: runList error ordering and CompleteProjectFields",
+        "product.diff: TestRunList_SelectedFieldContinuationFailureDoesNotRenderTable",
+        "tests.log: focused tests pass"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}

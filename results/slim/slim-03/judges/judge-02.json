@@ -1,0 +1,84 @@
+{
+  "candidate": "Candidate-C",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Repeatable flags, their conflicts, unchanged no-selection path, and help examples are implemented on the reachable command path.",
+      "evidence": [
+        "product.diff: item_list.go flag and RunE hunks",
+        "product.diff: resolveSelectedFields returns nil when neither flag is set",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Name matching is case-insensitive with canonical returned headers; unknown-name and unknown-ID candidates are sorted. Ambiguous matching IDs retain connection order rather than being sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByID",
+        "product.diff: resolveSelectedFields and table-header hunk"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The normal path reuses returned fields and no-selection skips resolution. For more than 100 fields, the fallback calls ProjectFields with LimitMax, whose paginator stops once 100 nodes are collected, so it does not obtain a complete field list.",
+      "evidence": [
+        "product.diff: resolveSelectedFields",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: paginateAttributes"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All listed scalar, structured, and multi-value renderers plus empty missing values are implemented and covered by the focused package test. No newline/carriage-return normalization is visible before values are handed to the unavailable table-printer implementation.",
+      "evidence": [
+        "product.diff: field_value_display.go",
+        "product.diff: field_value_display_test.go",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected fields append canonical headers in request order; each item emits one cell per selected field by field ID, preserving empty cells and the established item-list path.",
+      "evidence": [
+        "product.diff: runList, printResults, and FieldValueDisplay hunks",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes.ID"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Field retrieval and resolution errors return before table rendering. The focused change uses existing ProjectField, Client, and shared resolver types without altering unrelated command flow.",
+      "evidence": [
+        "product.diff: resolveSelectedFields error returns",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go",
+        "product.diff: item_list.go"
+      ]
+    }
+  ],
+  "totalScore": 86,
+  "criticalGaps": [
+    "Ambiguous field-name diagnostics do not sort candidate IDs deterministically.",
+    "Projects with over 100 fields are not fully retrieved for selected-column resolution.",
+    "Multiline value normalization is not established by the supplied reachable context."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

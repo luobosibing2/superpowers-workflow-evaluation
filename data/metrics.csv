@@ -1,0 +1,16 @@
+condition,run,pair,status,score_1,score_2,mean_score,wall_seconds,deduplicated_tokens,trajectory_tool_calls,estimated_credits
+without,run-01,,completed,84,80,82,420.705,1272877,23,17.122488
+without,run-04,,completed,79,86,82.5,732.402,3938662,54,40.949638
+without,run-05,,completed,79,82,80.5,395.991,1024825,21,15.243075
+slim,slim-01,,completed,85,83,84,525.763,2486226,34,30.778387
+slim,slim-02,,completed,78,80,79,548.118,2025808,34,26.725125
+slim,slim-03,,completed,87,86,86.5,575.666,2300305,36,28.4332
+requirement-loop,loop-02,pair-01,completed,96,96,96,709.095,2647751,35,42.747513
+requirement-loop,loop-03,pair-02,completed,100,100,100,643.553,2916531,38,43.714012
+requirement-loop,loop-05,pair-03,completed,98,96,97,708.467,3055597,40,44.0175
+requirement-review-loops,loop-01,pair-01,completed,100,100,100,1404.934,3747210,54,98.286126
+requirement-review-loops,loop-04,pair-02,completed,99,98,98.5,1272.192,6248266,70,87.035374
+requirement-review-loops,loop-06,pair-03,completed,100,100,100,1055.607,4630616,57,70.675562
+full,run-02,,token_cap,100,100,100,2870.196,18467275,266,216.976188
+full,run-03,,completed,99,99,99,1927.764,13318859,186,147.783462
+full,run-06,,completed,98,98,98,2473.612,15835964,280,184.141538

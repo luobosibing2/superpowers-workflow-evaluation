@@ -1,0 +1,5 @@
+===== focused-test-01.log =====
+COMMAND: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries
+ok  	github.com/cli/cli/v2/pkg/cmd/project/item-list	5.886s
+ok  	github.com/cli/cli/v2/pkg/cmd/project/shared/queries	6.415s
+EXIT_CODE: 0

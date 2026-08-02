@@ -1,0 +1,761 @@
+diff --git a/pkg/cmd/project/item-list/fields.go b/pkg/cmd/project/item-list/fields.go
+new file mode 100644
+index 0000000..2738b9f
+--- /dev/null
++++ b/pkg/cmd/project/item-list/fields.go
+@@ -0,0 +1,86 @@
++package itemlist
++
++import (
++	"strconv"
++	"strings"
++
++	"github.com/cli/cli/v2/pkg/cmd/project/shared/queries"
++)
++
++var cellWhitespace = strings.NewReplacer("\r\n", " ", "\n", " ", "\r", " ")
++
++func resolveSelectedFields(project *queries.Project, opts listOpts) ([]queries.ProjectField, error) {
++	selected := make([]queries.ProjectField, 0, len(opts.fields)+len(opts.fieldIDs))
++	for _, name := range opts.fields {
++		field, err := queries.ResolveFieldByName(project.Fields.Nodes, name)
++		if err != nil {
++			return nil, err
++		}
++		selected = append(selected, field)
++	}
++	for _, id := range opts.fieldIDs {
++		field, err := queries.ResolveFieldByID(project.Fields.Nodes, id)
++		if err != nil {
++			return nil, err
++		}
++		selected = append(selected, field)
++	}
++	return selected, nil
++}
++
++func fieldValue(item queries.ProjectItem, fieldID string) string {
++	for _, node := range item.FieldValues.Nodes {
++		if node.ID() != fieldID {
++			continue
++		}
++
++		var value string
++		switch node.Type {
++		case "ProjectV2ItemFieldDateValue":
++			value = node.ProjectV2ItemFieldDateValue.Date
++		case "ProjectV2ItemFieldIterationValue":
++			value = node.ProjectV2ItemFieldIterationValue.Title
++		case "ProjectV2ItemFieldNumberValue":
++			value = strconv.FormatFloat(node.ProjectV2ItemFieldNumberValue.Number, 'f', -1, 64)
++		case "ProjectV2ItemFieldSingleSelectValue":
++			value = node.ProjectV2ItemFieldSingleSelectValue.Name
++		case "ProjectV2ItemFieldTextValue":
++			value = node.ProjectV2ItemFieldTextValue.Text
++		case "ProjectV2ItemFieldMilestoneValue":
++			value = node.ProjectV2ItemFieldMilestoneValue.Milestone.Title
++		case "ProjectV2ItemFieldLabelValue":
++			labels := make([]string, 0, len(node.ProjectV2ItemFieldLabelValue.Labels.Nodes))
++			for _, label := range node.ProjectV2ItemFieldLabelValue.Labels.Nodes {
++				labels = append(labels, label.Name)
++			}
++			value = strings.Join(labels, ", ")
++		case "ProjectV2ItemFieldPullRequestValue":
++			urls := make([]string, 0, len(node.ProjectV2ItemFieldPullRequestValue.PullRequests.Nodes))
++			for _, pullRequest := range node.ProjectV2ItemFieldPullRequestValue.PullRequests.Nodes {
++				urls = append(urls, pullRequest.Url)
++			}
++			value = strings.Join(urls, ", ")
++		case "ProjectV2ItemFieldRepositoryValue":
++			value = node.ProjectV2ItemFieldRepositoryValue.Repository.Url
++		case "ProjectV2ItemFieldUserValue":
++			logins := make([]string, 0, len(node.ProjectV2ItemFieldUserValue.Users.Nodes))
++			for _, user := range node.ProjectV2ItemFieldUserValue.Users.Nodes {
++				logins = append(logins, user.Login)
++			}
++			value = strings.Join(logins, ", ")
++		case "ProjectV2ItemFieldReviewerValue":
++			reviewers := make([]string, 0, len(node.ProjectV2ItemFieldReviewerValue.Reviewers.Nodes))
++			for _, reviewer := range node.ProjectV2ItemFieldReviewerValue.Reviewers.Nodes {
++				switch reviewer.Type {
++				case "Team":
++					reviewers = append(reviewers, reviewer.Team.Name)
++				case "User":
++					reviewers = append(reviewers, reviewer.User.Login)
++				}
++			}
++			value = strings.Join(reviewers, ", ")
++		}
++		return cellWhitespace.Replace(value)
++	}
++	return ""
++}
+diff --git a/pkg/cmd/project/item-list/fields_test.go b/pkg/cmd/project/item-list/fields_test.go
+new file mode 100644
+index 0000000..94d25b0
+--- /dev/null
++++ b/pkg/cmd/project/item-list/fields_test.go
+@@ -0,0 +1,221 @@
++package itemlist
++
++import (
++	"testing"
++
++	"github.com/cli/cli/v2/pkg/cmd/project/shared/queries"
++	"github.com/stretchr/testify/assert"
++	"github.com/stretchr/testify/require"
++)
++
++func TestResolveSelectedFields(t *testing.T) {
++	tests := []struct {
++		name    string
++		opts    listOpts
++		fields  []queries.ProjectField
++		wantIDs []string
++		wantErr string
++	}{
++		{
++			name:    "case insensitive canonical name",
++			opts:    listOpts{fields: []string{"status"}},
++			fields:  []queries.ProjectField{projectField("PVTSSF_status", "Status")},
++			wantIDs: []string{"PVTSSF_status"},
++		},
++		{
++			name: "ambiguous field lists sorted IDs",
++			opts: listOpts{fields: []string{"status"}},
++			fields: []queries.ProjectField{
++				projectField("PVTSSF_z", "Status"), projectField("PVTSSF_a", "STATUS"),
++			},
++			wantErr: "field \"status\" is ambiguous; multiple fields share this name (use --field-id with one of: PVTSSF_a, PVTSSF_z)",
++		},
++		{
++			name:    "preserves requested ID order",
++			opts:    listOpts{fieldIDs: []string{"PVTF_priority", "PVTF_status"}},
++			fields:  []queries.ProjectField{projectField("PVTF_status", "Status"), projectField("PVTF_priority", "Priority")},
++			wantIDs: []string{"PVTF_priority", "PVTF_status"},
++		},
++	}
++
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			project := &queries.Project{}
++			project.Fields.Nodes = tt.fields
++
++			got, err := resolveSelectedFields(project, tt.opts)
++			if tt.wantErr != "" {
++				require.EqualError(t, err, tt.wantErr)
++				return
++			}
++			require.NoError(t, err)
++
++			gotIDs := make([]string, len(got))
++			for i := range got {
++				gotIDs[i] = got[i].ID()
++			}
++			assert.Equal(t, tt.wantIDs, gotIDs)
++		})
++	}
++}
++
++func TestFieldValue(t *testing.T) {
++	item := queries.ProjectItem{}
++	item.FieldValues.Nodes = []queries.FieldValueNodes{
++		dateValue("date", "2024-01-02"),
++		iterationValue("iteration", "Sprint 1"),
++		numberValue("whole", 1),
++		numberValue("fraction", 1.5),
++		singleSelectValue("status", "In Progress"),
++		textValue("text", "first\r\nsecond\rthird"),
++		milestoneValue("milestone", "v1.0"),
++		labelsValue("labels", "bug", "help wanted"),
++		pullRequestsValue("pulls", "https://github.com/cli/cli/pull/1", "https://github.com/cli/cli/pull/2"),
++		repositoryValue("repository", "https://github.com/cli/cli"),
++		usersValue("assignees", "monalisa", "hubot"),
++		reviewersValue("reviewers", "Team", "cli", "User", "monalisa"),
++	}
++
++	tests := []struct {
++		name    string
++		fieldID string
++		want    string
++	}{
++		{name: "date", fieldID: "date", want: "2024-01-02"},
++		{name: "iteration title", fieldID: "iteration", want: "Sprint 1"},
++		{name: "whole number", fieldID: "whole", want: "1"},
++		{name: "fractional number", fieldID: "fraction", want: "1.5"},
++		{name: "single select", fieldID: "status", want: "In Progress"},
++		{name: "text normalizes newlines", fieldID: "text", want: "first second third"},
++		{name: "milestone title", fieldID: "milestone", want: "v1.0"},
++		{name: "labels", fieldID: "labels", want: "bug, help wanted"},
++		{name: "pull request URLs", fieldID: "pulls", want: "https://github.com/cli/cli/pull/1, https://github.com/cli/cli/pull/2"},
++		{name: "repository URL", fieldID: "repository", want: "https://github.com/cli/cli"},
++		{name: "user logins", fieldID: "assignees", want: "monalisa, hubot"},
++		{name: "team and user reviewers", fieldID: "reviewers", want: "cli, monalisa"},
++		{name: "missing value", fieldID: "missing", want: ""},
++	}
++
++	for _, tt := range tests {
++		t.Run(tt.name, func(t *testing.T) {
++			assert.Equal(t, tt.want, fieldValue(item, tt.fieldID))
++		})
++	}
++}
++
++func projectField(id, name string) queries.ProjectField {
++	field := queries.ProjectField{TypeName: "ProjectV2Field"}
++	field.Field.ID = id
++	field.Field.Name = name
++	return field
++}
++
++func dateValue(id, date string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldDateValue"}
++	value.ProjectV2ItemFieldDateValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldDateValue.Date = date
++	return value
++}
++
++func iterationValue(id, title string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldIterationValue"}
++	value.ProjectV2ItemFieldIterationValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldIterationValue.Title = title
++	return value
++}
++
++func numberValue(id string, number float64) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldNumberValue"}
++	value.ProjectV2ItemFieldNumberValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldNumberValue.Number = number
++	return value
++}
++
++func singleSelectValue(id, name string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldSingleSelectValue"}
++	value.ProjectV2ItemFieldSingleSelectValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldSingleSelectValue.Name = name
++	return value
++}
++
++func textValue(id, text string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldTextValue"}
++	value.ProjectV2ItemFieldTextValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldTextValue.Text = text
++	return value
++}
++
++func milestoneValue(id, title string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldMilestoneValue"}
++	value.ProjectV2ItemFieldMilestoneValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldMilestoneValue.Milestone.Title = title
++	return value
++}
++
++func labelsValue(id string, names ...string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldLabelValue"}
++	value.ProjectV2ItemFieldLabelValue.Field = projectField(id, id)
++	for _, name := range names {
++		value.ProjectV2ItemFieldLabelValue.Labels.Nodes = append(value.ProjectV2ItemFieldLabelValue.Labels.Nodes, struct{ Name string }{Name: name})
++	}
++	return value
++}
++
++func pullRequestsValue(id string, urls ...string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldPullRequestValue"}
++	value.ProjectV2ItemFieldPullRequestValue.Field = projectField(id, id)
++	for _, url := range urls {
++		value.ProjectV2ItemFieldPullRequestValue.PullRequests.Nodes = append(value.ProjectV2ItemFieldPullRequestValue.PullRequests.Nodes, struct{ Url string }{Url: url})
++	}
++	return value
++}
++
++func repositoryValue(id, url string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldRepositoryValue"}
++	value.ProjectV2ItemFieldRepositoryValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldRepositoryValue.Repository.Url = url
++	return value
++}
++
++func usersValue(id string, logins ...string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldUserValue"}
++	value.ProjectV2ItemFieldUserValue.Field = projectField(id, id)
++	for _, login := range logins {
++		value.ProjectV2ItemFieldUserValue.Users.Nodes = append(value.ProjectV2ItemFieldUserValue.Users.Nodes, struct{ Login string }{Login: login})
++	}
++	return value
++}
++
++func reviewersValue(id string, firstType, firstName, secondType, secondName string) queries.FieldValueNodes {
++	value := queries.FieldValueNodes{Type: "ProjectV2ItemFieldReviewerValue"}
++	value.ProjectV2ItemFieldReviewerValue.Field = projectField(id, id)
++	value.ProjectV2ItemFieldReviewerValue.Reviewers.Nodes = append(value.ProjectV2ItemFieldReviewerValue.Reviewers.Nodes,
++		reviewer(firstType, firstName), reviewer(secondType, secondName))
++	return value
++}
++
++func reviewer(typename, name string) struct {
++	Type string `graphql:"__typename"`
++	Team struct {
++		Name string
++	} `graphql:"... on Team"`
++	User struct {
++		Login string
++	} `graphql:"... on User"`
++} {
++	reviewer := struct {
++		Type string `graphql:"__typename"`
++		Team struct {
++			Name string
++		} `graphql:"... on Team"`
++		User struct {
++			Login string
++		} `graphql:"... on User"`
++	}{Type: typename}
++	if typename == "Team" {
++		reviewer.Team.Name = name
++	} else {
++		reviewer.User.Login = name
++	}
++	return reviewer
++}
+diff --git a/pkg/cmd/project/item-list/item_list.go b/pkg/cmd/project/item-list/item_list.go
+index 1ff4c55..e7c8f82 100644
+--- a/pkg/cmd/project/item-list/item_list.go
++++ b/pkg/cmd/project/item-list/item_list.go
+@@ -21,9 +21,15 @@ type listOpts struct {
+ 	owner    string
+ 	number   int32
+ 	query    string
++	fields   []string
++	fieldIDs []string
+ 	exporter cmdutil.Exporter
+ }
+ 
++func (o listOpts) hasSelectedFields() bool {
++	return len(o.fields) > 0 || len(o.fieldIDs) > 0
++}
++
+ type listConfig struct {
+ 	io       *iostreams.IOStreams
+ 	client   *queries.Client
+@@ -58,6 +64,17 @@ func NewCmdList(f *cmdutil.Factory, runF func(config listConfig) error) *cobra.C
+ 		`),
+ 		Args: cobra.MaximumNArgs(1),
+ 		RunE: func(cmd *cobra.Command, args []string) error {
++			if err := cmdutil.MutuallyExclusive(
++				"only one of `--field` or `--field-id` may be used",
++				len(opts.fields) > 0,
++				len(opts.fieldIDs) > 0,
++			); err != nil {
++				return err
++			}
++			if opts.hasSelectedFields() && opts.exporter != nil {
++				return cmdutil.FlagErrorf("`--field` and `--field-id` cannot be used with `--format`")
++			}
++
+ 			client, err := client.New(f)
+ 			if err != nil {
+ 				return err
+@@ -101,6 +118,8 @@ func NewCmdList(f *cmdutil.Factory, runF func(config listConfig) error) *cobra.C
+ 
+ 	listCmd.Flags().StringVar(&opts.owner, "owner", "", "Login of the owner. Use \"@me\" for the current user")
+ 	listCmd.Flags().StringVar(&opts.query, "query", "", `Filter items using the Projects filter syntax, e.g. "assignee:octocat -status:Done"`)
++	listCmd.Flags().StringArrayVar(&opts.fields, "field", nil, "Name of a field to add as a table column")
++	listCmd.Flags().StringArrayVar(&opts.fieldIDs, "field-id", nil, "ID of a field to add as a table column")
+ 	cmdutil.AddFormatFlags(listCmd, &opts.exporter)
+ 	listCmd.Flags().IntVarP(&opts.limit, "limit", "L", queries.LimitDefault, "Maximum number of items to fetch")
+ 
+@@ -138,19 +157,38 @@ func runList(config listConfig) error {
+ 		return err
+ 	}
+ 
++	var selected []queries.ProjectField
++	if config.opts.hasSelectedFields() {
++		if project.Fields.PageInfo.HasNextPage {
++			complete, err := config.client.ProjectFields(owner, config.opts.number, project.Fields.TotalCount)
++			if err != nil {
++				return err
++			}
++			project.Fields = complete.Fields
++		}
++		selected, err = resolveSelectedFields(project, config.opts)
++		if err != nil {
++			return err
++		}
++	}
++
+ 	if config.opts.exporter != nil {
+ 		return config.opts.exporter.Write(config.io, project.DetailedItems())
+ 	}
+ 
+-	return printResults(config, project.Items.Nodes, owner.Login)
++	return printResults(config, project.Items.Nodes, owner.Login, selected)
+ }
+ 
+-func printResults(config listConfig, items []queries.ProjectItem, login string) error {
++func printResults(config listConfig, items []queries.ProjectItem, login string, selected []queries.ProjectField) error {
+ 	if len(items) == 0 {
+ 		return cmdutil.NewNoResultsError(fmt.Sprintf("Project %d for owner %s has no items", config.opts.number, login))
+ 	}
+ 
+-	tp := tableprinter.New(config.io, tableprinter.WithHeader("Type", "Title", "Number", "Repository", "ID"))
++	headers := []string{"Type", "Title", "Number", "Repository", "ID"}
++	for _, field := range selected {
++		headers = append(headers, field.Name())
++	}
++	tp := tableprinter.New(config.io, tableprinter.WithHeader(headers...))
+ 
+ 	for _, i := range items {
+ 		tp.AddField(i.Type())
+@@ -162,6 +200,9 @@ func printResults(config listConfig, items []queries.ProjectItem, login string)
+ 		}
+ 		tp.AddField(i.Repo())
+ 		tp.AddField(i.ID(), tableprinter.WithTruncate(nil))
++		for _, field := range selected {
++			tp.AddField(fieldValue(i, field.ID()))
++		}
+ 		tp.EndRow()
+ 	}
+ 
+diff --git a/pkg/cmd/project/item-list/item_list_test.go b/pkg/cmd/project/item-list/item_list_test.go
+index a9df420..95c0c00 100644
+--- a/pkg/cmd/project/item-list/item_list_test.go
++++ b/pkg/cmd/project/item-list/item_list_test.go
+@@ -53,6 +53,27 @@ func TestNewCmdList(t *testing.T) {
+ 			},
+ 			wantsExporter: true,
+ 		},
++		{
++			name: "repeated field names",
++			cli:  "1 --field Status --field Priority",
++			wants: listOpts{
++				number: 1,
++				limit:  30,
++				fields: []string{"Status", "Priority"},
++			},
++		},
++		{
++			name:        "field forms are mutually exclusive",
++			cli:         "1 --field Status --field-id PVTSSF_status",
++			wantsErr:    true,
++			wantsErrMsg: "only one of `--field` or `--field-id` may be used",
++		},
++		{
++			name:        "selected fields reject format",
++			cli:         "1 --field Status --format json",
++			wantsErr:    true,
++			wantsErrMsg: "`--field` and `--field-id` cannot be used with `--format`",
++		},
+ 		{
+ 			name: "query",
+ 			cli:  `--query "assignee:octocat"`,
+@@ -93,6 +114,8 @@ func TestNewCmdList(t *testing.T) {
+ 			assert.Equal(t, tt.wants.number, gotOpts.number)
+ 			assert.Equal(t, tt.wants.owner, gotOpts.owner)
+ 			assert.Equal(t, tt.wants.query, gotOpts.query)
++			assert.Equal(t, tt.wants.fields, gotOpts.fields)
++			assert.Equal(t, tt.wants.fieldIDs, gotOpts.fieldIDs)
+ 			assert.Equal(t, tt.wantsExporter, gotOpts.exporter != nil)
+ 			assert.Equal(t, tt.wants.limit, gotOpts.limit)
+ 		})
+@@ -316,6 +339,289 @@ func TestRunList_User(t *testing.T) {
+ 		stdout.String())
+ }
+ 
++func TestRunList_SelectedFields(t *testing.T) {
++	defer gock.Off()
++
++	gock.New("https://api.github.com").
++		Post("/graphql").
++		MatchType("json").
++		JSON(map[string]interface{}{
++			"query": "query UserOrgOwner.*",
++			"variables": map[string]interface{}{
++				"login": "monalisa",
++			},
++		}).
++		Reply(200).
++		JSON(map[string]interface{}{
++			"data": map[string]interface{}{
++				"user": map[string]interface{}{"id": "an ID"},
++			},
++			"errors": []interface{}{map[string]interface{}{
++				"type": "NOT_FOUND",
++				"path": []string{"organization"},
++			}},
++		})
++
++	gock.New("https://api.github.com").
++		Post("/graphql").
++		JSON(map[string]interface{}{
++			"query": "query UserProjectWithItems.*",
++			"variables": map[string]interface{}{
++				"firstItems":  queries.LimitDefault,
++				"afterItems":  nil,
++				"firstFields": queries.LimitMax,
++				"afterFields": nil,
++				"login":       "monalisa",
++				"number":      1,
++			},
++		}).
++		Reply(200).
++		JSON(map[string]interface{}{
++			"data": map[string]interface{}{
++				"user": map[string]interface{}{
++					"projectV2": map[string]interface{}{
++						"fields": map[string]interface{}{
++							"nodes": []map[string]interface{}{
++								{"__typename": "ProjectV2SingleSelectField", "id": "PVTSSF_status", "name": "Status", "dataType": "SINGLE_SELECT"},
++								{"__typename": "ProjectV2Field", "id": "PVTF_priority", "name": "Priority", "dataType": "TEXT"},
++							},
++						},
++						"items": map[string]interface{}{
++							"nodes": []map[string]interface{}{{
++								"id": "issue ID",
++								"content": map[string]interface{}{
++									"__typename": "Issue",
++									"title":      "an issue",
++									"number":     1,
++									"repository": map[string]string{"nameWithOwner": "cli/go-gh"},
++								},
++								"fieldValues": map[string]interface{}{
++									"nodes": []map[string]interface{}{
++										{
++											"__typename": "ProjectV2ItemFieldSingleSelectValue",
++											"name":       "In Progress",
++											"field":      map[string]interface{}{"__typename": "ProjectV2SingleSelectField", "id": "PVTSSF_status"},
++										},
++										{
++											"__typename": "ProjectV2ItemFieldTextValue",
++											"text":       "High",
++											"field":      map[string]interface{}{"__typename": "ProjectV2Field", "id": "PVTF_priority"},
++										},
++									},
++								},
++							}},
++						},
++					},
++				},
++			},
++		})
++
++	client := queries.NewTestClient()
++	ios, _, stdout, _ := iostreams.Test()
++	config := listConfig{
++		opts:   listOpts{number: 1, owner: "monalisa", fields: []string{"status", "priority"}},
++		client: client,
++		io:     ios,
++	}
++
++	err := runList(config)
++	assert.NoError(t, err)
++	assert.Equal(t, "Issue\tan issue\t1\tcli/go-gh\tissue ID\tIn Progress\tHigh\n", stdout.String())
++}
++
++func TestRunList_SelectedFieldsCompletesPaginatedFields(t *testing.T) {
++	defer gock.Off()
++	registerItemListUserOwner()
++	registerItemListItemsResponse(map[string]interface{}{
++		"nodes": []map[string]interface{}{itemListIssue("issue ID", "an issue")},
++	}, map[string]interface{}{
++		"nodes":      []map[string]interface{}{},
++		"totalCount": 101,
++		"pageInfo":   map[string]interface{}{"hasNextPage": true},
++	})
++	gock.New("https://api.github.com").
++		Post("/graphql").
++		JSON(map[string]interface{}{
++			"query": "query UserProjectWithFields.*",
++			"variables": map[string]interface{}{
++				"firstItems":  queries.LimitMax,
++				"afterItems":  nil,
++				"firstFields": queries.LimitMax,
++				"afterFields": nil,
++				"login":       "monalisa",
++				"number":      1,
++			},
++		}).
++		Reply(200).
++		JSON(map[string]interface{}{
++			"data": map[string]interface{}{
++				"user": map[string]interface{}{
++					"projectV2": map[string]interface{}{
++						"fields": map[string]interface{}{
++							"nodes":    []map[string]interface{}{},
++							"pageInfo": map[string]interface{}{"endCursor": "field cursor", "hasNextPage": true},
++						},
++					},
++				},
++			},
++		})
++	gock.New("https://api.github.com").
++		Post("/graphql").
++		JSON(map[string]interface{}{
++			"query": "query UserProjectWithFields.*",
++			"variables": map[string]interface{}{
++				"firstItems":  queries.LimitMax,
++				"afterItems":  nil,
++				"firstFields": queries.LimitMax,
++				"afterFields": "field cursor",
++				"login":       "monalisa",
++				"number":      1,
++			},
++		}).
++		Reply(200).
++		JSON(map[string]interface{}{
++			"data": map[string]interface{}{
++				"user": map[string]interface{}{
++					"projectV2": map[string]interface{}{
++						"fields": map[string]interface{}{
++							"nodes":    []map[string]interface{}{{"__typename": "ProjectV2Field", "id": "PVTF_status", "name": "Status", "dataType": "TEXT"}},
++							"pageInfo": map[string]interface{}{"hasNextPage": false},
++						},
++					},
++				},
++			},
++		})
++
++	ios, _, stdout, _ := iostreams.Test()
++	err := runList(listConfig{
++		opts:   listOpts{number: 1, owner: "monalisa", fields: []string{"status"}},
++		client: queries.NewTestClient(),
++		io:     ios,
++	})
++	assert.NoError(t, err)
++	assert.Equal(t, "Issue\tan issue\t1\tcli/go-gh\tissue ID\t\n", stdout.String())
++	assert.True(t, gock.IsDone())
++}
++
++func TestRunList_DoesNotCompletePaginatedFieldsWithoutSelection(t *testing.T) {
++	defer gock.Off()
++	registerItemListUserOwner()
++	registerItemListItemsResponse(map[string]interface{}{
++		"nodes": []map[string]interface{}{itemListIssue("issue ID", "an issue")},
++	}, map[string]interface{}{
++		"nodes":      []map[string]interface{}{},
++		"totalCount": 101,
++		"pageInfo":   map[string]interface{}{"hasNextPage": true},
++	})
++
++	ios, _, stdout, _ := iostreams.Test()
++	err := runList(listConfig{
++		opts:   listOpts{number: 1, owner: "monalisa"},
++		client: queries.NewTestClient(),
++		io:     ios,
++	})
++	assert.NoError(t, err)
++	assert.Equal(t, "Issue\tan issue\t1\tcli/go-gh\tissue ID\n", stdout.String())
++	assert.True(t, gock.IsDone())
++}
++
++func TestRunList_SelectedFieldErrorsDoNotPrint(t *testing.T) {
++	t.Run("unknown field", func(t *testing.T) {
++		defer gock.Off()
++		registerItemListUserOwner()
++		registerItemListItemsResponse(map[string]interface{}{
++			"nodes": []map[string]interface{}{itemListIssue("issue ID", "an issue")},
++		}, map[string]interface{}{
++			"nodes": []map[string]interface{}{{"__typename": "ProjectV2Field", "id": "PVTF_status", "name": "Status", "dataType": "TEXT"}},
++		})
++
++		ios, _, stdout, _ := iostreams.Test()
++		err := runList(listConfig{
++			opts:   listOpts{number: 1, owner: "monalisa", fields: []string{"priority"}},
++			client: queries.NewTestClient(),
++			io:     ios,
++		})
++		assert.EqualError(t, err, "field \"priority\" not found in project; available fields: Status")
++		assert.Empty(t, stdout.String())
++	})
++
++	t.Run("field completion fails", func(t *testing.T) {
++		defer gock.Off()
++		registerItemListUserOwner()
++		registerItemListItemsResponse(map[string]interface{}{
++			"nodes": []map[string]interface{}{itemListIssue("issue ID", "an issue")},
++		}, map[string]interface{}{
++			"nodes":      []map[string]interface{}{},
++			"totalCount": 101,
++			"pageInfo":   map[string]interface{}{"hasNextPage": true},
++		})
++		gock.New("https://api.github.com").
++			Post("/graphql").
++			Reply(200).
++			JSON(map[string]interface{}{"errors": []map[string]interface{}{{"message": "field retrieval failed"}}})
++
++		ios, _, stdout, _ := iostreams.Test()
++		err := runList(listConfig{
++			opts:   listOpts{number: 1, owner: "monalisa", fields: []string{"status"}},
++			client: queries.NewTestClient(),
++			io:     ios,
++		})
++		assert.ErrorContains(t, err, "field retrieval failed")
++		assert.Empty(t, stdout.String())
++	})
++}
++
++func registerItemListUserOwner() {
++	gock.New("https://api.github.com").
++		Post("/graphql").
++		MatchType("json").
++		JSON(map[string]interface{}{
++			"query":     "query UserOrgOwner.*",
++			"variables": map[string]interface{}{"login": "monalisa"},
++		}).
++		Reply(200).
++		JSON(map[string]interface{}{
++			"data":   map[string]interface{}{"user": map[string]interface{}{"id": "an ID"}},
++			"errors": []interface{}{map[string]interface{}{"type": "NOT_FOUND", "path": []string{"organization"}}},
++		})
++}
++
++func registerItemListItemsResponse(items, fields map[string]interface{}) {
++	gock.New("https://api.github.com").
++		Post("/graphql").
++		JSON(map[string]interface{}{
++			"query": "query UserProjectWithItems.*",
++			"variables": map[string]interface{}{
++				"firstItems":  queries.LimitDefault,
++				"afterItems":  nil,
++				"firstFields": queries.LimitMax,
++				"afterFields": nil,
++				"login":       "monalisa",
++				"number":      1,
++			},
++		}).
++		Reply(200).
++		JSON(map[string]interface{}{
++			"data": map[string]interface{}{
++				"user": map[string]interface{}{
++					"projectV2": map[string]interface{}{"items": items, "fields": fields},
++				},
++			},
++		})
++}
++
++func itemListIssue(id, title string) map[string]interface{} {
++	return map[string]interface{}{
++		"id": id,
++		"content": map[string]interface{}{
++			"__typename": "Issue",
++			"title":      title,
++			"number":     1,
++			"repository": map[string]string{"nameWithOwner": "cli/go-gh"},
++		},
++	}
++}
++
+ func TestRunList_Org(t *testing.T) {
+ 	defer gock.Off()
+ 	// gock.Observe(gock.DumpRequest)
+diff --git a/pkg/cmd/project/shared/queries/resolve_fields.go b/pkg/cmd/project/shared/queries/resolve_fields.go
+index 1efe782..82a26be 100644
+--- a/pkg/cmd/project/shared/queries/resolve_fields.go
++++ b/pkg/cmd/project/shared/queries/resolve_fields.go
+@@ -85,6 +85,7 @@ func ResolveFieldByName(fields []ProjectField, name string) (ProjectField, error
+ 		for _, f := range matches {
+ 			ids = append(ids, f.ID())
+ 		}
++		sort.Strings(ids)
+ 		return ProjectField{}, &FieldAmbiguousError{Name: name, Candidates: ids}
+ 	}
+ }

@@ -1,0 +1,86 @@
+{
+  "candidate": "Candidate-F",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags and help example are present, but neither required flag conflict is enforced.",
+      "evidence": [
+        "product.diff: adds StringArrayVar for --field and --field-id and preserves each slice order",
+        "product.diff: TestNewCmdList accepts --field together with --field-id",
+        "product.diff: runList resolves selections, then writes exporter output without rejecting field selections"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive resolution, canonical names, and actionable unknown-field errors are implemented; ambiguous IDs retain response order rather than being sorted.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold and sorts unknown-name candidates",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByID reports sorted name-and-ID candidates",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous match IDs are appended without sort.Strings"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The normal path reuses definitions returned with ProjectItems, but does not fetch later field-definition pages when needed.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests fields(first: $firstFields) with firstFields = LimitMax",
+        "product.diff: runList resolves only project.Fields.Nodes; it never calls ProjectFields or pagination",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields and paginateAttributes provide field pagination but are unreachable from the added selection path"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All listed scalar, structured, and multi-value variants are rendered and matched by field ID, but values are returned raw with no CR/LF normalization.",
+      "evidence": [
+        "product.diff: projectFieldValue handles date, iteration, labels, number, select, text, milestone, pull requests, repository, users, and reviewers",
+        "product.diff: projectFieldValue returns empty string when no matching or recognized value exists",
+        "product.diff: no rendering branch removes carriage returns or replaces newlines"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "The reachable command path resolves selected fields before rendering, appends canonical headers, and appends one ID-matched cell per selected field for every item.",
+      "evidence": [
+        "product.diff: runList calls resolveSelectedFields then printResults",
+        "product.diff: printResults appends field.Name headers and projectFieldValue(i, field.ID()) for each item",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Lookup failures occur before exporter/table output and query errors propagate; the small focused diff uses existing query types and shared resolvers, though required validation gaps remain.",
+      "evidence": [
+        "product.diff: resolveSelectedFields returns errors before exporter.Write or printResults",
+        "baseline/pkg/cmd/project/item-list/item_list.go: ProjectItems errors return before output",
+        "product.diff: implementation uses queries.ProjectField, FieldValueNodes, ResolveFieldByName, and ResolveFieldByID"
+      ]
+    }
+  ],
+  "totalScore": 82,
+  "criticalGaps": [
+    "--field and --field-id can be combined, and field selections are not rejected with formatted/JSON output.",
+    "Selected fields beyond the first returned field-definition page cannot be resolved because no field pagination is invoked.",
+    "Rendered values are not sanitized for carriage returns and newlines.",
+    "Ambiguous field-ID candidates are not deterministically sorted."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

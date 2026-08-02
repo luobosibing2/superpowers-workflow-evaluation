@@ -1,0 +1,79 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Repeatable selectors, conflicts, help, and the no-selector path are implemented in the command flow.",
+      "evidence": [
+        "product.diff item_list.go flag and PreRunE hunks",
+        "baseline/pkg/cmd/project/item-list/item_list.go runList path",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Name resolution is case-insensitive, preserves canonical field names for headers, and emits sorted actionable candidates.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go",
+        "product.diff resolve_fields.go ambiguity-sort hunk",
+        "product.diff item_list.go resolveSelectedFields/header hunk"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "The initial item query supplies fields; continuation requests occur only for selected columns and loop from the returned cursor, with errors returned before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go ProjectItems",
+        "product.diff queries.go CompleteProjectFields hunk",
+        "product.diff item_list.go runList hunk"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Static",
+      "justification": "All specified scalar, structured, and multi-value variants are rendered, with empty fallback and CR/LF normalization.",
+      "evidence": [
+        "product.diff item_list.go formatFieldValue and normalizeTableText hunk",
+        "baseline/pkg/cmd/project/shared/queries/queries.go FieldValueNodes and ID()"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected canonical headers and one cell per selected field are appended per row; values are matched by field node ID and absent values yield empty cells.",
+      "evidence": [
+        "product.diff item_list.go printResults and fieldValueForID hunk",
+        "baseline/pkg/cmd/project/shared/queries/queries.go FieldValueNodes.ID()"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selection and field-pagination failures return before exporter/table output; the change uses the existing project query types and command path without altering the no-field behavior.",
+      "evidence": [
+        "product.diff item_list.go runList hunk",
+        "product.diff queries.go CompleteProjectFields hunk",
+        "tests.log: focused Go test command exited 0"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Static",
+  "confidence": "high"
+}

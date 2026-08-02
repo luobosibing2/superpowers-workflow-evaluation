@@ -1,0 +1,89 @@
+{
+  "candidate": "Candidate-C",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags and table-output conflict are implemented, but name and ID forms can be combined.",
+      "evidence": [
+        "product.diff: StringArrayVar registers repeatable --field and --field-id",
+        "product.diff: selectedFields processes both opts.fields and opts.fieldIDs without a mutual-exclusion check",
+        "product.diff: exporter conflict returns a FlagErrorf",
+        "product.diff: command example includes repeated --field"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive resolution and actionable unknown-field diagnostics are present; ambiguous IDs are not sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold and returns canonical ProjectField",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: unknown name and ID candidate lists are sorted",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguity collects matching IDs without sorting"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The first query’s field definitions are reused and no selection causes no second request, but paged fields are fetched only after initial resolution fails; the follow-up is capped at 100 fields.",
+      "evidence": [
+        "product.diff: selectedFields first receives project.Fields.Nodes",
+        "product.diff: ProjectFields is conditional on selectedFields error and HasNextPage",
+        "product.diff: follow-up calls ProjectFields(..., queries.LimitMax)",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields pagination stops once len(nodes) reaches its limit"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All listed scalar, structured, and multi-value variants render human-readable values, and absent/unknown values are empty; multiline text is not normalized.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue covers date, iteration, labels, number, select, text, milestone, PR, repository, user, and reviewer values",
+        "product.diff: number uses strconv.FormatFloat(..., 'f', -1, 64)",
+        "product.diff: fieldValue returns empty when no matching field ID or unknown value type",
+        "product.diff: no carriage-return removal or newline-to-space normalization is present"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolved fields produce ordered headers, and every item emits one cell per requested field using field IDs, including empty cells.",
+      "evidence": [
+        "product.diff: printResults appends headers in selected-field order",
+        "product.diff: printResults loops every selected field for every item",
+        "product.diff: fieldValue compares value.ID() with the selected field ID",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Lookup and retrieval errors return before rendering, and the change uses existing query types and shared resolvers; the forbidden mixed-flag input still proceeds to output.",
+      "evidence": [
+        "product.diff: resolution and ProjectFields errors are returned before printResults",
+        "product.diff: uses queries.ResolveFieldByName, ResolveFieldByID, ProjectField, and FieldValueNodes",
+        "product.diff: no error is returned when both opts.fields and opts.fieldIDs are populated"
+      ]
+    }
+  ],
+  "totalScore": 79,
+  "criticalGaps": [
+    "--field and --field-id are not mutually exclusive.",
+    "Field pagination does not always retrieve the complete field list and is capped at 100 fields.",
+    "Field text is not sanitized to remove carriage returns and replace newlines."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

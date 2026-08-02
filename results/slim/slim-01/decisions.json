@@ -1,0 +1,12 @@
+{
+  "operator": [
+    {
+      "timestampUtc": "2026-07-31T12:27:45.0237790Z",
+      "candidateTurn": 1,
+      "question": "When users mix repeatable `--field` and `--field-id` flags, should the added columns follow the exact cross-flag order typed on the command line, or may all name-selected columns precede all ID-selected columns?",
+      "answer": "OPERATOR_ANSWER: The two flags cannot be combined; reject the invocation with a clear mutual-exclusion error."
+    }
+  ],
+  "design": [],
+  "review": []
+}

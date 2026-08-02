@@ -1,0 +1,73 @@
+{
+  "schemaVersion": 1,
+  "runId": "slim-01",
+  "condition": "slim",
+  "status": "completed",
+  "startedAtUtc": "2026-07-31T12:26:56.848453Z",
+  "updatedAtUtc": "2026-07-31T12:35:42.609274Z",
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "high",
+  "codexVersion": "codex-cli 0.145.0",
+  "host": {
+    "os": "Unix 26.5.2",
+    "powershell": "7.6.4"
+  },
+  "tokenSoftCap": 20000000,
+  "wallClockMinutes": 120,
+  "treatment": {
+    "name": "slim-plan-on",
+    "pluginId": "superpowers@superpowers-local",
+    "pluginVersion": "6.1.1+codex.20260714153248",
+    "pluginCommit": "fa07307f3dbf7822fb3077587fbde649b0aa66ed",
+    "adapterSha256": "ef24bba6bcf8a8c6a2222593fbc17a9b67f1d01fa52856ac29f1ffe284ff5ca9",
+    "nativeSkillsDisabled": true,
+    "skills": [
+      "brainstorming",
+      "writing-plans",
+      "systematic-debugging",
+      "verification-before-completion"
+    ],
+    "adoptionValid": true,
+    "adoptionReasons": []
+  },
+  "endedAtUtc": "2026-07-31T12:35:42.609274Z",
+  "elapsedWallClockSeconds": 525.762,
+  "activeWallClockSeconds": 525.763,
+  "wallClockSeconds": 525.763,
+  "candidate": {
+    "turns": 2,
+    "finalMessage": "IMPLEMENTATION_COMPLETE",
+    "usage": {
+      "inputTokens": 2359684,
+      "cachedInputTokens": 2218240,
+      "outputTokens": 19422,
+      "reasoningOutputTokens": 5010,
+      "totalTokens": 2379106
+    },
+    "toolCalls": 28,
+    "toolCallsByType": {
+      "command_execution": 28
+    },
+    "modelActiveSeconds": 515.085
+  },
+  "operator": {
+    "turns": 1,
+    "usage": {
+      "inputTokens": 14258,
+      "cachedInputTokens": 7936,
+      "outputTokens": 56,
+      "reasoningOutputTokens": 27,
+      "totalTokens": 14314
+    },
+    "toolCalls": 0,
+    "toolCallsByType": {},
+    "modelActiveSeconds": 10.338
+  },
+  "focusedTests": [
+    {
+      "command": "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries",
+      "exitCode": 0,
+      "log": "focused-test-01.log"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "operator": [
+    {
+      "timestampUtc": "2026-07-31T12:36:39.1433880Z",
+      "candidateTurn": 1,
+      "question": "If the same project field is selected more than once (by repeated name, ID, or both), should `item-list` render duplicate columns in the supplied order, or reject the duplicate selection as an error?",
+      "answer": "OPERATOR_ANSWER: Render duplicate columns in the supplied order; do not reject duplicate selections."
+    }
+  ],
+  "design": [],
+  "review": []
+}

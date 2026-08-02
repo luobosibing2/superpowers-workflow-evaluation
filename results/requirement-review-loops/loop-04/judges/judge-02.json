@@ -1,0 +1,90 @@
+{
+  "candidate": "Candidate-C",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags preserve order and reject incompatible combinations; baseline behavior remains on the no-selection path. Help lacks a repeated-field example.",
+      "evidence": [
+        "product.diff: StringArrayVar additions and resolveSelectedFields loop",
+        "product.diff: RunE flag-conflict checks",
+        "baseline/pkg/cmd/project/item-list/item_list.go: unchanged no-field printResults path",
+        "baseline/pkg/cmd/project/item-list/item_list.go: Example block has no --field example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Name resolution is case-insensitive, returns canonical ProjectField headers, provides sorted candidates, and sorts ambiguous IDs.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName/ResolveFieldByID",
+        "product.diff: sorted ambiguous IDs hunk",
+        "product.diff: printResultsWithFields uses field.Name()",
+        "tests.log: focused Go test command exits 0"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The item query already fetches first-page fields; remaining pages are fetched only when PageInfo requires it, and errors return before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems fetches fields(first: $firstFields) with LimitMax",
+        "product.diff: RemainingProjectFields returns initial nodes when no next page and paginates otherwise",
+        "product.diff: TestRemainingProjectFields and TestRemainingProjectFieldsDoesNotRequestWithoutAdditionalPages",
+        "tests.log: focused Go test command exits 0"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and collection value types render to human-readable cells; unknown/missing values are empty and CR/LF is normalized.",
+      "evidence": [
+        "product.diff: displayFieldValue switch and normalizeSelectedFieldValue",
+        "product.diff: itemFieldValue returns empty when no matching field ID",
+        "product.diff: item_list_fields_test.go rendering and normalization tests",
+        "tests.log: focused Go test command exits 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected fields generate ordered headers and one cell per selected field for every item; lookup is by field node ID, so missing values cannot shift later columns.",
+      "evidence": [
+        "product.diff: runList selected-field branch",
+        "product.diff: printResultsWithFields header/item loops",
+        "product.diff: itemFieldValue compares value.ID() with selected field.ID()",
+        "baseline/pkg/cmd/project/item-list/item_list.go: existing command path"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Field retrieval and resolution complete before table rendering; pagination failures propagate and the focused test confirms stdout remains empty. The change reuses established query and table helpers.",
+      "evidence": [
+        "product.diff: runList error returns before printResultsWithFields",
+        "product.diff: TestRunList_FieldPaginationFailureDoesNotRender",
+        "product.diff: RemainingProjectFields uses paginateAttributes and doQueryWithProgressIndicator",
+        "tests.log: focused Go test command exits 0"
+      ]
+    }
+  ],
+  "totalScore": 98,
+  "criticalGaps": [
+    "The command help does not include the required realistic repeated --field example."
+  ],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}

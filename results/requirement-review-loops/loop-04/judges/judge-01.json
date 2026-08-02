@@ -1,0 +1,89 @@
+{
+  "candidate": "Candidate-C",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable flags, ordering, exclusions, and the no-selection path are present, but the help examples were not extended with a repeated-field example.",
+      "evidence": [
+        "product.diff: item-list listOpts/flag additions and RunE conflicts",
+        "product.diff: item-list runList preserves printResults when neither selection is set",
+        "baseline/pkg/cmd/project/item-list/item_list.go: Example block has no field-selection example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries passed"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Case-insensitive resolution retains canonical names; unknown and ambiguous selections return sorted, actionable candidates.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolve_fields.go sorts ambiguous IDs",
+        "product.diff: resolver tests",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The initial item query already returns fields; extra field pages are fetched only for selected columns when required, with errors returned before rendering.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields and returns project.Fields",
+        "product.diff: item-list runList calls RemainingProjectFields only with selections",
+        "product.diff: queries.go RemainingProjectFields and pagination tests",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and collection value variants render to readable strings; unknown/missing values are empty and line breaks are normalized.",
+      "evidence": [
+        "product.diff: item-list displayFieldValue, itemFieldValue, and normalizeSelectedFieldValue",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes and ID()",
+        "product.diff: item-list field rendering tests",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selected fields become ordered headers, each row resolves values by field node ID, and missing values add empty cells without altering subsequent columns.",
+      "evidence": [
+        "product.diff: item-list printResultsWithFields and itemFieldValue",
+        "product.diff: item-list runList dispatches selected fields through the existing command flow",
+        "product.diff: TestPrintResultsWithFields",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Validation, retrieval, and resolution all occur before table creation; retrieval failures return errors without output, using the shared query types and pagination helper.",
+      "evidence": [
+        "product.diff: item-list RunE and runList error returns",
+        "product.diff: TestRunList_FieldPaginationFailureDoesNotRender",
+        "product.diff: queries.go RemainingProjectFields uses paginateAttributes",
+        "tests.log: focused Go test command passed"
+      ]
+    }
+  ],
+  "totalScore": 99,
+  "criticalGaps": [
+    "Help lacks the required realistic example showing repeated --field or --field-id usage."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

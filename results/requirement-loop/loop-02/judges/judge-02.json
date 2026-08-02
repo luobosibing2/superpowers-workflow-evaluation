@@ -1,0 +1,79 @@
+{
+  "candidate": "Candidate-D",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable flags, conflicts, unchanged no-selection path, and repeated-field help example are implemented.",
+      "evidence": [
+        "product.diff: StringArray --field/--field-id, PreRunE conflicts, and Example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries (exit 0)"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Case-insensitive resolution and actionable unknown-field candidates are present, but ambiguous ID candidates retain API/list order rather than being sorted deterministically.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses EqualFold and sorts unknown-name candidates",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous matches append IDs without sort"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Selection reuses ProjectItems field definitions, requests additional pages only when indicated, and returns retrieval errors before rendering.",
+      "evidence": [
+        "product.diff: resolveSelectedFields calls ProjectFieldsAfter with project.Fields only after a selection",
+        "product.diff: ProjectFieldsAfter loops on HasNextPage and returns query errors",
+        "tests.log: focused project query package test passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value types are formatted; absent/unknown values are empty and cells normalize CR/LF.",
+      "evidence": [
+        "product.diff: formatFieldValue and normalizeCell",
+        "product.diff: TestFieldValueFormatting and TestFieldValueMatchesFieldID",
+        "tests.log: focused item-list package test passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolved canonical fields extend headers in request order; each item adds one value per selected field by field ID, preserving empty cells and alignment.",
+      "evidence": [
+        "product.diff: runList → resolveSelectedFields → printResults",
+        "product.diff: fieldValue compares value.ID() with selected field.ID()"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution/pagination failures return before table creation, and the focused change uses existing query and table helpers without altering the no-selection path.",
+      "evidence": [
+        "product.diff: runList returns resolution error before exporter/table output",
+        "baseline/pkg/cmd/project/item-list/item_list.go: unchanged owner, item-query, exporter, and table path"
+      ]
+    }
+  ],
+  "totalScore": 96,
+  "criticalGaps": [
+    "Ambiguous case-insensitive name errors do not sort candidate IDs, so their ordering depends on returned field order."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

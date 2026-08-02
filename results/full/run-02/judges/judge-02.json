@@ -1,0 +1,83 @@
+{
+  "candidate": "Candidate-D",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Repeatable selectors are parsed into ordered slices; conflicts are rejected, and the unchanged path retains the original table/export behavior.",
+      "evidence": [
+        "product.diff: NewCmdList adds StringArray --field/--field-id, conflict checks, format conflict, and repeated-field help",
+        "product.diff: runList retains exporter behavior and passes nil selected fields when none are requested",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolution is case-insensitive, returns the selected canonical field for headers, supplies sorted candidates, and sorts ambiguous IDs.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolve_fields.go hunk sorts ambiguous IDs",
+        "product.diff: TestResolveSelectedFields covers unknown ID and deterministic ambiguity"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The existing item query supplies initial field definitions; additional field pagination occurs only for selected columns and errors stop processing.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests project Fields",
+        "product.diff: resolveSelectedFields calls ProjectFieldsAfter only when selected fields exist and PageInfo indicates more pages",
+        "product.diff: ProjectFieldsAfter and focused pagination/no-selection tests",
+        "tests.log: focused Go test command exited 0"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value variants are rendered, joined appropriately, matched through field IDs, and normalized for CR/LF; absent or unknown values return empty cells.",
+      "evidence": [
+        "product.diff: formatFieldValue and sanitizeTableCell",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes and ID cover the rendered variants",
+        "product.diff: TestFormatFieldValue covers all listed value families and newline normalization",
+        "tests.log: focused Go test command exited 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Headers follow selected-field order and each item adds exactly one ID-matched cell per selected field, preserving alignment and empty cells.",
+      "evidence": [
+        "product.diff: printResults appends selected headers then iterates selected fields for every item",
+        "product.diff: TestRunList_SelectedFieldsCompleteEveryFieldPageInSelectorOrder asserts rendered two-column output",
+        "baseline/pkg/cmd/project/item-list/item_list.go: original item-list owner/project/item path remains intact"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution and pagination failures return before rendering; the change uses existing query types/helpers and is limited to item-list selection/rendering plus shared field pagination/resolution.",
+      "evidence": [
+        "product.diff: runList/resolveSelectedFields return errors before printResults",
+        "product.diff: ProjectFieldsAfter propagates query and pagination errors",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: existing ProjectField, FieldValueNodes, and pagination helpers"
+      ]
+    }
+  ],
+  "totalScore": 100,
+  "criticalGaps": [],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}

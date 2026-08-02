@@ -1,0 +1,87 @@
+{
+  "candidate": "Candidate-A",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Repeatable selectors and the help example are present, but neither selector mutual exclusion nor formatted-output conflicts are enforced.",
+      "evidence": [
+        "product.diff: flags append ordered fieldSelection entries",
+        "product.diff: adds repeated --field example",
+        "product.diff: registers flags but contains no Cobra conflict declaration; exporter still writes formatted output"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Unverified",
+      "justification": "Case-insensitive resolution, canonical headers, and candidate-bearing unknown-field errors are present. Ambiguity is detected, but its candidate-ID order is inherited unsorted from the returned connection.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold",
+        "product.diff: headers use field.Name()",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: unknown-name/ID candidates are sorted",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous IDs are appended without sorting"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The normal path resolves the definitions returned by ProjectItems, but it never retrieves subsequent field-definition pages when selections are requested.",
+      "evidence": [
+        "product.diff: resolves only project.Fields.Nodes after ProjectItems",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields as LimitMax and paginates only items",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields contains pagination support but is not called by the candidate path"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 20,
+      "maxScore": 25,
+      "validation": "Contradicted",
+      "justification": "All specified scalar, structured, and multi-value variants have explicit rendering, with empty fallback; CR/LF normalization is absent.",
+      "evidence": [
+        "product.diff: FieldValueNodes.DisplayValue handles date, iteration, number, select, text, milestone, labels, PRs, repository, users, and reviewers",
+        "product.diff: default DisplayValue return is empty",
+        "product.diff: no carriage-return/newline normalization before table output",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolved fields add headers in selection order, and values are found by field node ID with an empty fallback, preserving row alignment.",
+      "evidence": [
+        "product.diff: printResults appends one header and one cell per selected field",
+        "product.diff: fieldValue compares value.ID() to field.ID() and returns empty when absent",
+        "tests.log: focused package test command exited 0"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 12,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Lookup errors occur before table rendering and the change uses existing query types, but invalid selector combinations and selector-plus-exporter usage are accepted instead of failing clearly.",
+      "evidence": [
+        "product.diff: resolveSelectedFields returns before exporter/table output",
+        "product.diff: runList retains the existing exporter path after resolution",
+        "product.diff: no validation for combined selector forms or exporter conflict"
+      ]
+    }
+  ],
+  "totalScore": 78,
+  "criticalGaps": [
+    "--field and --field-id can be combined, and either can be combined with formatted/JSON output without the required clear failure.",
+    "Requested fields beyond the initial ProjectItems field-definition page are never fetched.",
+    "Rendered values are not normalized to remove carriage returns and replace newlines with spaces."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

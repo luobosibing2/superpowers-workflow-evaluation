@@ -1,0 +1,87 @@
+{
+  "candidate": "Candidate-E",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 10,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Both repeatable flags parse and no-field behavior remains intact, but mutually exclusive flags are accepted and formatted output silently ignores selected columns.",
+      "evidence": [
+        "product.diff: adds StringArrayVar flags and repeated-field help example",
+        "product.diff: selectedFields processes names and IDs sequentially with no conflict check",
+        "product.diff: exporter.Write executes without using resolved fields"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 13,
+      "maxScore": 15,
+      "validation": "Unverified",
+      "justification": "Case-insensitive matching, canonical headers, and candidate-bearing errors are complete. Ambiguity is detected, but its candidate IDs retain input/API order rather than being explicitly sorted.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName uses strings.EqualFold",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: unknown-name and unknown-ID candidates are sorted",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ambiguous IDs are appended without sorting",
+        "product.diff: headers use field.Name()"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 8,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "The initial field definitions returned by the item query are reused, but requested fields beyond the first field page are never fetched.",
+      "evidence": [
+        "product.diff: runList resolves project.Fields.Nodes directly",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems requests firstFields=LimitMax and paginates only items",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectFields contains the available field-pagination path, which the candidate does not call"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 22,
+      "maxScore": 25,
+      "validation": "Unverified",
+      "justification": "All listed scalar, structured, and multi-value variants are rendered, and unknown/missing values produce empty strings. Multiline normalization is not implemented in the visible rendering path.",
+      "evidence": [
+        "product.diff: fieldValueDisplay covers date, iteration, labels, number, select, text, milestone, PR, repository, users, and reviewers",
+        "product.diff: projectFieldValue returns an empty string when no matching field ID exists",
+        "product.diff: rendering returns raw strings; no carriage-return/newline normalization is present",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries exited 0"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolved fields are appended to headers and each row looks up every requested value by field node ID, adding an empty cell when absent; the existing command path still calls the table renderer.",
+      "evidence": [
+        "product.diff: printResults appends field.Name() headers in selected order",
+        "product.diff: each row calls projectFieldValue(..., field.ID()) before EndRow",
+        "product.diff: runList retains owner/project/item retrieval then calls printResults"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 12,
+      "maxScore": 15,
+      "validation": "Contradicted",
+      "justification": "Lookup errors occur before rendering and the patch uses established query types, but invalid combined selection is accepted and can render duplicate/misleading columns instead of failing.",
+      "evidence": [
+        "product.diff: selectedFields errors return before exporter or printResults",
+        "product.diff: no validation rejects simultaneous --field and --field-id",
+        "product.diff: focused changes are confined to item-list and its tests"
+      ]
+    }
+  ],
+  "totalScore": 80,
+  "criticalGaps": [
+    "--field and --field-id are not mutually exclusive, and field selection is not rejected with formatted/JSON output.",
+    "Field definitions are limited to the first page; requested fields on later pages cannot resolve.",
+    "Rendered values are not visibly normalized to remove carriage returns and replace newlines."
+  ],
+  "overallValidation": "Contradicted",
+  "confidence": "high"
+}

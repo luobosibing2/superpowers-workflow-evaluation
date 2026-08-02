@@ -1,0 +1,81 @@
+{
+  "candidate": "Candidate-D",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Repeatable flags, conflicts, and help are wired into the command; the no-selection path preserves the original table/exporter flow.",
+      "evidence": [
+        "product.diff: item-list flags and PreRunE",
+        "product.diff: repeated-field help example",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries passed"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 11,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Case-insensitive resolution, canonical headers, and actionable unknown-field errors are present. Ambiguous IDs are collected in connection order without sorting, so deterministic candidate ordering is not ensured.",
+      "evidence": [
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go: ResolveFieldByName and ResolveFieldByID",
+        "product.diff: resolveSelectedFields and header construction"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Selected fields reuse the initial ProjectItems field page and fetch additional pages only when indicated; failures return before rendering.",
+      "evidence": [
+        "product.diff: resolveSelectedFields and ProjectFieldsAfter",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: ProjectItems",
+        "product.diff: TestProjectFieldsAfter and TestProjectFieldsAfter_NoAdditionalPages",
+        "tests.log: focused Go test command passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Static",
+      "justification": "All specified scalar, structured, and multi-value types are formatted; unmatched or unknown values are empty and CR/LF is normalized.",
+      "evidence": [
+        "product.diff: formatFieldValue, fieldValue, and normalizeCell",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: FieldValueNodes.ID",
+        "product.diff: TestFieldValueFormatting and TestFieldValueMatchesFieldID"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolved fields append ordered headers and each row looks up values by field ID, adding an empty cell when absent while retaining the established command path.",
+      "evidence": [
+        "product.diff: runList, printResults, and fieldValue",
+        "baseline/pkg/cmd/project/item-list/item_list.go: original owner/project/item path"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Flag, retrieval, and resolution failures return before table output. The focused diff uses existing query types and table rendering helpers.",
+      "evidence": [
+        "product.diff: PreRunE and resolveSelectedFields",
+        "baseline/pkg/cmd/project/shared/queries/queries.go: Client query helpers"
+      ]
+    }
+  ],
+  "totalScore": 96,
+  "criticalGaps": [
+    "Ambiguous name diagnostics do not sort candidate field IDs, so their order is not guaranteed deterministic."
+  ],
+  "overallValidation": "Static",
+  "confidence": "high"
+}

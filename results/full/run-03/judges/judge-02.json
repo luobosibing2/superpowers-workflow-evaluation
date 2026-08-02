@@ -1,0 +1,82 @@
+{
+  "candidate": "Candidate-B",
+  "dimensions": [
+    {
+      "name": "CLI surface and compatibility",
+      "score": 14,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Repeatable flags, ordering, and conflicts are wired into the existing command; no repeated-field help example was added.",
+      "evidence": [
+        "product.diff: item_list.go adds StringArray --field/--field-id and ordered opts slices",
+        "product.diff: item_list.go rejects mixed selectors and exporter output",
+        "baseline/pkg/cmd/project/item-list/item_list.go Example block remains without a field-selection example"
+      ]
+    },
+    {
+      "name": "Resolution and diagnostics",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Resolution is case-insensitive, retains canonical selected fields for headers, and produces sorted actionable candidates.",
+      "evidence": [
+        "product.diff: fields.go resolveSelectedFields",
+        "baseline/pkg/cmd/project/shared/queries/resolve_fields.go ResolveFieldByName/ResolveFieldByID",
+        "product.diff: resolve_fields.go sorts ambiguous IDs"
+      ]
+    },
+    {
+      "name": "Query path and pagination",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "The normal path resolves returned definitions; selected paginated fields are completed, while unselected fields are not fetched again.",
+      "evidence": [
+        "product.diff: item_list.go runList field-resolution branch",
+        "product.diff: TestRunList_SelectedFieldsCompletesPaginatedFields and TestRunList_DoesNotCompletePaginatedFieldsWithoutSelection",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries passed"
+      ]
+    },
+    {
+      "name": "Field-value rendering",
+      "score": 25,
+      "maxScore": 25,
+      "validation": "Verified",
+      "justification": "All specified scalar, structured, and multi-value types render through field ID lookup; absent/unknown values are empty and line breaks are normalized.",
+      "evidence": [
+        "product.diff: fields.go fieldValue",
+        "product.diff: fields_test.go TestFieldValue",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries passed"
+      ]
+    },
+    {
+      "name": "End-to-end table behavior",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Static",
+      "justification": "Headers and cells are appended in selected-field order, and each value is looked up by its selected field ID.",
+      "evidence": [
+        "product.diff: item_list.go printResults appends headers then fieldValue(i, field.ID())",
+        "product.diff: item_list_test.go TestRunList_SelectedFields"
+      ]
+    },
+    {
+      "name": "Failure safety and maintainability",
+      "score": 15,
+      "maxScore": 15,
+      "validation": "Verified",
+      "justification": "Resolution and pagination errors return before rendering; the change uses existing query/client/table paths and is narrowly scoped.",
+      "evidence": [
+        "product.diff: item_list.go returns field completion/resolution errors before printResults",
+        "product.diff: item_list_test.go TestRunList_SelectedFieldErrorsDoNotPrint",
+        "tests.log: go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries passed"
+      ]
+    }
+  ],
+  "totalScore": 99,
+  "criticalGaps": [
+    "Help lacks the contract-required realistic repeated-field example."
+  ],
+  "overallValidation": "Verified",
+  "confidence": "high"
+}
