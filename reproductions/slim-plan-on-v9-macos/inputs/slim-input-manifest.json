@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "sourceCommit": "fa07307f3dbf7822fb3077587fbde649b0aa66ed",
+  "version": "6.1.1+codex.20260714153248",
+  "files": {
+    "../slim-adapter.md": "eaf3a4628266f69e5b724f281cfbdf12344922cbdf528f86319a3f596f2c3296",
+    ".agents/plugins/marketplace.json": "76ebbae3bc87ed157b660b86693a1ac7a6807a1c2fd7677921ff281a3de8b920",
+    ".codex-plugin/plugin.json": "15ee5c0473c6067304cd41b40cb4ad4e6d4c4e374d365772d55a6b8e7dc7c4ef",
+    "AGENTS.md": "e4351779ded115e40c85033aa245482677db6b12402aebb6631943c67a976663",
+    "LICENSE": "a37e0e9697144819e1d965176ac4ae5bc3fa02d11e7812036bbcadf6dafe2400",
+    "README.md": "847d7fd0a3d986c9fbbac473915bc9d69f52e8e64a020623fcc384e2ff1214f5",
+    "assets/app-icon.png": "b7477eb39b5109617fe37e51dd65d8bdd8dff6c40fda49adfbc21eec445777ee",
+    "assets/superpowers-small.svg": "54a632d9ee6197ccbc10d43d42217e23d08375bea63ba8eb4b6af757c1535038",
+    "skills/brainstorming/SKILL.md": "0d4514a856cd0224752d50b65e793636e541b456843c680b90089c3367835404",
+    "skills/systematic-debugging/SKILL.md": "e36fcf5e2b49e3f954aa008a3e75dbfc5fa75fe63ec30670864e13ccfbf835ca",
+    "skills/verification-before-completion/SKILL.md": "63e3d04ff8332ba99c5b55ebe3f06f4b72fb2be0d12fb12349659afd98ce2cbb",
+    "skills/writing-plans/SKILL.md": "4e05170aaf7d2e6b33d8e7fe81817b9ba5fe662b7bbbc84e06d354f8c4f51407",
+    "tests/test_slim_contract.py": "e68aef8eb5a4cae02ee834ab31da4fecbf26f558394e236d2fbf837d392f6cb8"
+  }
+}

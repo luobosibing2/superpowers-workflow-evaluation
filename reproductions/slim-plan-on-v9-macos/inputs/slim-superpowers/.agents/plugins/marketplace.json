@@ -1,0 +1,20 @@
+{
+  "name": "superpowers-local",
+  "interface": {
+    "displayName": "Superpowers Local"
+  },
+  "plugins": [
+    {
+      "name": "superpowers",
+      "source": {
+        "source": "local",
+        "path": "."
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

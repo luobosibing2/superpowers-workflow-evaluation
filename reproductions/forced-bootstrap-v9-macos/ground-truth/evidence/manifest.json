@@ -1,0 +1,29 @@
+{
+  "frozenAtUtc": "2026-07-24T02:22:32.8937074Z",
+  "sourceRepo": "cli/cli",
+  "baselineCommit": "ae66a1c02e08366858f3070664f493afbe0cdf18",
+  "oracleCommit": "efe3f165dd297c85fff11473dbf586f2d39fbf86",
+  "superpowersCommit": "d884ae04edebef577e82ff7c4e143debd0bbec99",
+  "files": [
+    {
+      "name": "issue-13816.json",
+      "bytes": 3265,
+      "sha256": "980ece2bb9b22dcb2a5b5c46ebd2d1511073f30f3b2618c47e6c087e289432be"
+    },
+    {
+      "name": "oracle.diff",
+      "bytes": 29350,
+      "sha256": "0b86ff85d354a0398fd03256ac4894108a1acefa5369e5ea0cc7d5504bfa463b"
+    },
+    {
+      "name": "pr-13823.json",
+      "bytes": 19443,
+      "sha256": "24962d941a7ce3bb5bbda28db1c62295fc6c778cc1aa6b45b1ba85ed1cda1fe9"
+    },
+    {
+      "name": "review-comments.json",
+      "bytes": 42293,
+      "sha256": "17cf15aa4429daf4b631b3446301709dd57b7258294fc834db15784259518bf9"
+    }
+  ]
+}

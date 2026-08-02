@@ -1,0 +1,48 @@
+{
+  "name": "cli-item-list-fields-slim-loops-v9-macos",
+  "sourceExperiment": "../forced-bootstrap-v9-macos",
+  "sourceRepo": "cli/cli",
+  "sourceCheckout": "../../candidates/cli",
+  "baselineCommit": "ae66a1c02e08366858f3070664f493afbe0cdf18",
+  "oracleCommit": "efe3f165dd297c85fff11473dbf586f2d39fbf86",
+  "oracleTree": "b4539ca014121861158af022e743c494436f1b1f",
+  "slimPluginInput": "inputs/slim-superpowers",
+  "slimPluginCommit": "fa07307f3dbf7822fb3077587fbde649b0aa66ed",
+  "slimPlugin": "superpowers@superpowers-local",
+  "slimPluginVersion": "6.1.1+codex.20260714153248",
+  "slimSkills": [
+    "brainstorming",
+    "writing-plans",
+    "systematic-debugging",
+    "verification-before-completion"
+  ],
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "high",
+  "subagentModel": "gpt-5.6-terra",
+  "subagentReasoningEffort": "high",
+  "maxSubagentsPerRun": 4,
+  "operatorModel": "gpt-5.6-terra",
+  "operatorReasoningEffort": "high",
+  "runIds": [
+    "loop-01",
+    "loop-02",
+    "loop-03",
+    "loop-04",
+    "loop-05",
+    "loop-06"
+  ],
+  "probePair": ["loop-01", "loop-02"],
+  "maxParallelAfterProbe": 4,
+  "pairIds": ["pair-01", "pair-02", "pair-03"],
+  "conditionNames": ["slim-requirement-loop", "slim-requirement-review-loops"],
+  "productScope": [
+    "pkg/cmd/project/item-list",
+    "pkg/cmd/project/shared/queries"
+  ],
+  "wallClockMinutes": 120,
+  "softTokenCap": 20000000,
+  "pricing": "pricing.json",
+  "focusedTests": [
+    "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+  ]
+}

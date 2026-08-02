@@ -1,0 +1,31 @@
+{
+  "name": "cli-item-list-fields-superpowers-forced-bootstrap-v9",
+  "sourceRepo": "cli/cli",
+  "sourceCheckout": "../../candidates/cli",
+  "baselineCommit": "ae66a1c02e08366858f3070664f493afbe0cdf18",
+  "oracleCommit": "efe3f165dd297c85fff11473dbf586f2d39fbf86",
+  "superpowersCheckout": "../../tools/superpowers",
+  "superpowersCommit": "d884ae04edebef577e82ff7c4e143debd0bbec99",
+  "superpowersPlugin": "superpowers@superpowers-dev",
+  "superpowersVersion": "6.1.1",
+  "treatmentBootstrap": {
+    "usingSuperpowers": "../../tools/superpowers/skills/using-superpowers/SKILL.md",
+    "codexTools": "../../tools/superpowers/skills/using-superpowers/references/codex-tools.md"
+  },
+  "model": "gpt-5.6-terra",
+  "reasoningEffort": "high",
+  "subagentModel": "gpt-5.6-terra",
+  "subagentReasoningEffort": "high",
+  "maxSubagentsPerRun": 4,
+  "operatorModel": "gpt-5.6-terra",
+  "operatorReasoningEffort": "high",
+  "runIds": ["run-01", "run-02", "run-03", "run-04", "run-05", "run-06"],
+  "pairIds": [["run-01", "run-02"], ["run-03", "run-04"], ["run-05", "run-06"]],
+  "maxParallel": 4,
+  "wallClockMinutes": 120,
+  "softTokenCap": 20000000,
+  "pricing": "pricing.json",
+  "focusedTests": [
+    "go test ./pkg/cmd/project/item-list ./pkg/cmd/project/shared/queries"
+  ]
+}
