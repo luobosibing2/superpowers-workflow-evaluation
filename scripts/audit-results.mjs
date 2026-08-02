@@ -19,7 +19,7 @@ function walk(path) {
   const output = [];
   for (const name of readdirSync(path)) {
     const child = join(path, name);
-    if (name === ".git" || name === "node_modules" || name === "dist" || name === "__pycache__") continue;
+    if ([".git", "node_modules", "dist", ".next", ".vinext", ".wrangler", "__pycache__"].includes(name)) continue;
     if (statSync(child).isDirectory()) output.push(...walk(child)); else output.push(child);
   }
   return output;

@@ -1,5 +1,11 @@
 # Superpowers Workflow Evaluation
 
+> **在线实验报告：** [打开五种方法、15 条轨迹的可视化网站](https://workflow-arena-trace-v9.zhangyc970514.chatgpt.site)
+>
+> **实验驱动的开源实现：** [`luobosibing2/superpowers-slim`](https://github.com/luobosibing2/superpowers-slim)
+> 根据本仓库观察到的质量收益、token 成本和流程冗余持续优化，目标是在保留需求澄清、计划、调试、完成前验证和按需代码审查能力的同时，减少完整工作流的额外开销。
+> 本实验实际测试的是四方法提交 [`fa07307f`](https://github.com/luobosibing2/superpowers-slim/commit/fa07307f3dbf7822fb3077587fbde649b0aa66ed)；后续优化版本不应被表述为已经由这 15 条轨迹直接验证。
+
 这是一个针对编码代理工作流的证据型实验仓库。它比较同一项 GitHub CLI
 需求在五种工作流下的产品质量、时间、token、工具调用和过程结构，而不是只看
 “插件是否被加载”。
@@ -57,6 +63,7 @@ verification-before-completion。当前五方法版本 `8607c8c` 新增的 `code
 - [loop-01 replacement 关系](superseded/replacement.json)
 - [五组实验定义](experiments/five-method/README.md)
 - [macOS 复现入口](run.ps1)
+- [Dashboard 源码](site/)；部署版本位于 [workflow-arena-trace-v9](https://workflow-arena-trace-v9.zhangyc970514.chatgpt.site/)
 
 运行公开数据审计：
 
