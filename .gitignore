@@ -1,0 +1,35 @@
+# Credentials and actor homes
+.env
+.env.*
+auth.json
+*.private.json
+**/codex-homes/
+**/.judge-homes/
+**/.codex/
+
+# External inputs and runtime state
+baselines/
+candidates/
+tools/
+**/.runtime/
+**/fixtures/
+**/state/
+**/runs/
+**/invalidated/
+**/aborted-runs/
+**/evaluation/candidates*/
+
+# Local and generated files
+.DS_Store
+*.tmp
+*.log.tmp
+node_modules/
+dist/
+.next/
+.wrangler/
+.venv/
+.pytest_cache/
+**/__pycache__/
+
+# Sites build output is packaged from the verified worktree, not committed.
+site/dist/
