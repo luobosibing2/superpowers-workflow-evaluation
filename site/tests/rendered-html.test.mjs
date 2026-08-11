@@ -16,7 +16,7 @@ test("server-renders all five groups and fifteen runs", async () => {
   assert.equal(response.status, 200);
   const html = await response.text();
   assert.match(html, /<html lang="zh-CN">/i);
-  assert.match(html, /<title>Workflow Arena 五种方法轨迹对比<\/title>/i);
+  assert.match(html, /<title>Workflow Arena 工作流评测<\/title>/i);
   assert.match(html, /Full With/);
   assert.match(html, /Slim With/);
   assert.match(html, /Requirement Loop/);
@@ -49,6 +49,8 @@ test("server-renders all five groups and fifteen runs", async () => {
   assert.match(html, /https:\/\/github\.com\/luobosibing2\/superpowers-workflow-evaluation/);
   assert.match(html, /https:\/\/github\.com\/luobosibing2\/superpowers-slim/);
   assert.match(html, /fa07307f/);
+  assert.match(html, /五种工作流，八个真实任务/);
+  assert.match(html, /href="\/luna-panel"/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape|react-loading-skeleton/i);
 });
 
@@ -108,4 +110,37 @@ test("scenario and per-condition pages expose the task analysis", async () => {
   assert.match(experimentHtml, /focused Go tests/);
   assert.match(experimentHtml, /32\.7/);
   assert.match(experimentHtml, /coordinate/);
+});
+
+test("external Luna panel renders the imported five-workflow evidence", async () => {
+  const [publishedData, siteData] = await Promise.all([
+    readFile(new URL("../../data/luna-skill-panel-v1/capability-task-score-matrix.json", import.meta.url), "utf8"),
+    readFile(new URL("../app/luna-panel-data.json", import.meta.url), "utf8"),
+  ]);
+  assert.equal(siteData, publishedData);
+  const response = await render("/luna-panel");
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /EXTERNAL PANEL/);
+  assert.match(html, /五种技能工作流/);
+  assert.match(html, />120</);
+  assert.match(html, />240</);
+  assert.match(html, /Grill Me/);
+  assert.match(html, /Superpowers Full/);
+  assert.match(html, /MatrixSpec L0/);
+  assert.match(html, /OpenSpec core/);
+  assert.match(html, /Ponytail/);
+  assert.match(html, /92\.14/);
+  assert.match(html, /89\.64/);
+  assert.match(html, /23\/24/);
+  assert.match(html, /completed \/ protocol-failed \/ token-limit/);
+  assert.match(html, /1\.602B/);
+  assert.match(html, /treatment adoption audit/);
+  assert.match(html, /session attribution fallback/);
+  assert.match(html, /c746e58/);
+  assert.match(html, /没有同期 Bare/);
+  assert.match(html, /raw sessions/);
+  assert.match(html, /来源仓在固定提交没有声明 repository license/);
+  assert.match(html, /https:\/\/github\.com\/cyijun\/workflow-arena\/tree\/c746e58/);
+  assert.match(html, /data\/luna-skill-panel-v1/);
 });

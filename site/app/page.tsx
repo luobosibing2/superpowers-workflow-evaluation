@@ -335,7 +335,7 @@ export default function Home() {
   return (
     <main>
       <header className="hero" id="top">
-        <nav><a href="#top" className="brand">WA / TRACE 09</a><div><a href="#shape">方法</a><a href="#scenario">场景</a><a href="#distribution">分布</a><a href="#timeline">轨迹</a><a href="#questions">问题</a><a href="#boundary">边界</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation">源码</a></div></nav>
+        <nav><a href="#top" className="brand">WA / TRACE 09</a><div><a href="/luna-panel">Luna 横评</a><a href="#shape">方法</a><a href="#scenario">场景</a><a href="#distribution">分布</a><a href="#timeline">轨迹</a><a href="#questions">问题</a><a href="#boundary">边界</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation">源码</a></div></nav>
         <div className="hero-copy">
           <div>
             <span className="kicker">WORKFLOW ARENA · gpt-5.6-terra/high · macOS</span>
@@ -351,6 +351,15 @@ export default function Home() {
           <Metric label="平均首次改产品" value={`${fmtDuration(without.firstMutationMeanSeconds)} · ${fmtDuration(slim.firstMutationMeanSeconds)} · ${fmtDuration(requirement.firstMutationMeanSeconds)} · ${fmtDuration(reviewLoops.firstMutationMeanSeconds)} · ${fmtDuration(full.firstMutationMeanSeconds)}`} note="顺序同上；需求闭环会把首次 mutation 推后" />
         </div>
       </header>
+
+      <section className="section">
+        <div className="luna-panel-teaser">
+          <div className="lead"><span>NEW · EXTERNAL LUNA PANEL</span><h2>五种工作流，八个真实任务</h2><p>新增 120 条 Luna/high candidate compact 结果：Grill Me、Superpowers、MatrixSpec、OpenSpec 与 Ponytail 的质量、精确测试、完成状态和资源横评。</p><a href="/luna-panel">打开多任务横评 →</a></div>
+          <div><b>92.14</b><p>Grill Me 宏均分</p><small>23/24 focused-test flags</small></div>
+          <div><b>89.64</b><p>Superpowers Full</p><small>32.99M candidate token / run</small></div>
+          <div><b>120</b><p>candidate runs</p><small>5 workflows × 8 tasks × 3</small></div>
+        </div>
+      </section>
 
       <section className="section" id="shape">
         <div className="section-title"><span>01 / METHOD SHAPE</span><h2>把 Full 的两个机制增量拆成相邻阶梯</h2></div>
@@ -422,7 +431,7 @@ export default function Home() {
         <div className="boundary-grid"><div><h3>原始 rollout 事实</h3><ul><li>session parent / child 树与 actor role</li><li>UTC timestamp 与工具动作</li><li><code>last_token_usage</code> 单次调用增量</li><li>operator turn、focused-test log 与最终状态</li></ul></div><div><h3>分类器派生</h3><ul>{data.audit.boundaries.map((item) => <li key={item}>{item}</li>)}</ul></div><aside><span>FORK DEDUPE</span><b>−{data.audit.inheritedForkTokensRemoved.toLocaleString("en-US")} token</b><p>{data.audit.note}</p></aside></div>
       </section>
 
-      <footer><span>Workflow Arena · 5 methods · 15 runs</span><span className="footer-links"><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation">源码</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation/blob/main/docs/report.md">报告</a><a href="https://github.com/luobosibing2/superpowers-slim">Superpowers Slim</a><a href="https://github.com/luobosibing2/superpowers-slim/commit/fa07307f3dbf7822fb3077587fbde649b0aa66ed">已测 fa07307f</a></span><span>Native rollouts · Asia/Shanghai · generated {new Date(data.generatedAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</span></footer>
+      <footer><span>Workflow Arena · 5 local methods + external Luna panel</span><span className="footer-links"><a href="/luna-panel">Luna 横评</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation">源码</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation/blob/main/docs/report.md">报告</a><a href="https://github.com/luobosibing2/superpowers-slim">Superpowers Slim</a><a href="https://github.com/luobosibing2/superpowers-slim/commit/fa07307f3dbf7822fb3077587fbde649b0aa66ed">已测 fa07307f</a></span><span>Native rollouts · Asia/Shanghai · generated {new Date(data.generatedAt).toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</span></footer>
     </main>
   );
 }

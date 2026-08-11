@@ -1,6 +1,7 @@
 # Superpowers Workflow Evaluation
 
 > **在线实验报告：** [打开五种方法、15 条轨迹的可视化网站](https://workflow-arena-trace-v9.zhangyc970514.chatgpt.site)
+> · [打开 Luna 五工作流、八任务横评](https://workflow-arena-trace-v9.zhangyc970514.chatgpt.site/luna-panel)
 >
 > **实验驱动的开源实现：** [`luobosibing2/superpowers-slim`](https://github.com/luobosibing2/superpowers-slim)
 > 根据本仓库观察到的质量收益、token 成本和流程冗余持续优化，目标是在保留需求澄清、计划、调试、完成前验证和按需代码审查能力的同时，减少完整工作流的额外开销。
@@ -27,6 +28,27 @@
 1.83 分，但资源成本继续明显上升。Full 相比 review-loop 组没有更高均分，却
 多使用约 11.00M token 和 19:40 墙钟时间。跨批次差值和 post-hoc replacement
 不能当作因果估计；完整限定见[中文主报告](docs/report.md)。
+
+## 扩展：Luna 五工作流、八任务面板
+
+本站另行归档并重新可视化了
+[`cyijun/workflow-arena@c746e58`](https://github.com/cyijun/workflow-arena/tree/c746e58bf850bd9bc8326f2172383a28841b2364)
+公开的 compact 结果。该面板使用 `gpt-5.6-luna/high` 候选和
+`gpt-5.6-terra/high` operator/judge，覆盖 5 种 workflow、8 个任务、每格 3 条，
+共 120 条 candidate run 和 240 个自动盲评分。
+
+| Workflow | 八任务宏均分 | Workflow 完成 | Focused tests | Token / run | 时间 / run |
+|---|---:|---:|---:|---:|---:|
+| Grill Me | 92.14 | 24/24 | 23/24 | 5.85M | 18.50 min |
+| Superpowers Full | 89.64 | 24/24 | 21/24 | 32.99M | 48.38 min |
+| MatrixSpec L0 | 86.71 | 11/24 | 19/24 | 21.05M | 41.24 min |
+| OpenSpec core | 72.00 | 24/24 | 16/24 | 5.51M | 13.62 min |
+| Ponytail | 70.19 | 24/24 | 14/24 | 3.17M | 9.25 min |
+
+这不是本仓重新运行的实验，也没有同期 Bare arm。来源仓公开了汇总 CSV/JSON，
+但没有提交 raw sessions、逐条产品 diff、测试日志和原始 verdict，因此本仓只重建并
+审计公开算术，不能把它提升为与本仓 15 条 canonical results 相同的逐 run 证据等级。
+详细分析见 [Luna 面板说明](docs/luna-skill-panel.md)。
 
 ## 实验问题
 
@@ -62,6 +84,8 @@ verification-before-completion。当前五方法版本 `8607c8c` 新增的 `code
 - [15 条公开结果](results/)
 - [loop-01 replacement 关系](superseded/replacement.json)
 - [五组实验定义](experiments/five-method/README.md)
+- [Luna 面板公开 compact 数据](data/luna-skill-panel-v1/)
+- [Luna 面板来源、结果和证据边界](docs/luna-skill-panel.md)
 - [macOS 复现入口](run.ps1)
 - [Dashboard 源码](site/)；部署版本位于 [workflow-arena-trace-v9](https://workflow-arena-trace-v9.zhangyc970514.chatgpt.site/)
 
@@ -69,6 +93,7 @@ verification-before-completion。当前五方法版本 `8607c8c` 新增的 `code
 
 ```bash
 node scripts/audit-results.mjs
+node scripts/audit-luna-panel.mjs
 ```
 
 审计锁定 15 条 canonical run、30 份 verdict、15 份 `EXIT_CODE: 0` 的

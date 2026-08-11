@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "dataset": "luna-skill-panel-v1",
+  "sourceRepository": "https://github.com/cyijun/workflow-arena",
+  "sourceBranch": "feature/linux-tmux",
+  "sourceCommit": "c746e58bf850bd9bc8326f2172383a28841b2364",
+  "sourcePath": "reports/luna-skill-panel-v1",
+  "sourceLicenseDeclaredAtPinnedCommit": false,
+  "importPolicy": "Public factual CSV and JSON result tables only; source HTML and prose reports are not redistributed.",
+  "rawEvidencePublishedBySource": false,
+  "files": {
+    "capability-task-economics.csv": "360daeb71bd212f2f857a76152fad84add1f65fd219b043100eecb6f1785cb03",
+    "capability-task-score-matrix.csv": "bc96caee4a60ab3762efe3db81c5cf5d1b7ec695ca29e525eddadebd092dc2f1",
+    "capability-task-score-matrix.json": "0b84b2c21500beea1d70c77aa9626eeb00bd7e1b309008ab134ccd25fcb55265",
+    "run-metrics.csv": "132b910e618014f809a39ce6cff0aafa645667cde2f7a999d734524b032a89f0"
+  }
+}

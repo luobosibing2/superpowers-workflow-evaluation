@@ -49,7 +49,7 @@ export default function TaskPage() {
   return (
     <main className="detail-page">
       <header className="detail-hero">
-        <nav><Link href="/" className="brand">WA / TRACE 09</Link><div><Link href="/">首页</Link><a href="#brief">需求</a><a href="#paths">作业路径</a><a href="#comparison">比较</a></div></nav>
+        <nav><Link href="/" className="brand">WA / TRACE 09</Link><div><Link href="/">首页</Link><Link href="/luna-panel">Luna 横评</Link><a href="#brief">需求</a><a href="#paths">作业路径</a><a href="#comparison">比较</a></div></nav>
         <div className="detail-hero-copy"><span>SCENARIO 01 · TASK ANALYSIS</span><h1>需求上下文不完整，<em>CLI 行为必须自己补齐。</em></h1><p>这不是抽象的“插件好不好”问题，而是一个公开目标明确、隐藏行为规格分散在 contract 里的 GitHub CLI 改动任务。</p></div>
       </header>
 

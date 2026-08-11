@@ -1,0 +1,6 @@
+capability,treatment,cli_item_list_fields,eslint_preserve_caught_error,pytest_plugin_entry_points,pytest_addini_type_expressions,bat_sanitize,sqlmodel_field_constraints,axum_custom_executor,prometheus_utf8_negotiation,macro_mean,historical_macro_mean,macro_delta,coverage,workflow_completed,focused_tests_passed,avg_minutes_per_run,avg_candidate_tokens_m_per_run,avg_terra_equivalent_credits_per_run,recorded_experiment_terra_equivalent_credits,avg_operator_decisions_per_run
+superpowers-6.1.1,full,99.17,99.0,99.5,89.5,75.33,84.33,97.5,72.83,89.64,84.08,5.56,8/8,24/24,21/24,48.38,32.99,324.64,7791.41,8.92
+mattpocock-grill-me,grill-me,100.0,99.67,98.67,86.83,97.33,86.0,97.83,70.83,92.14,,,8/8,24/24,23/24,18.5,5.85,91.32,2191.72,11.58
+fission-openspec,core-propose-apply,83.33,48.0,94.83,79.33,89.83,81.67,65.0,34.0,72.0,71.42,0.58,8/8,24/24,16/24,13.62,5.51,55.18,1324.39,0.08
+ponytail-16f2980,full,78.33,47.67,94.5,85.0,80.0,73.0,61.67,41.33,70.19,72.23,-2.04,8/8,24/24,14/24,9.25,3.17,34.48,827.58,0.0
+matrixspec-profiled-f7c4911,light-no-baseline,94.5,94.5,95.17,87.17,87.0,84.83,87.17,63.33,86.71,90.27,-3.56,8/8,11/24,19/24,41.24,21.05,247.38,5937.19,10.33

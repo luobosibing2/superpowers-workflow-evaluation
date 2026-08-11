@@ -52,3 +52,15 @@ redistributed.
 Exact experiment pins and published artifact hashes are recorded in
 [`experiments/five-method/experiment.json`](experiments/five-method/experiment.json)
 and [`data/manifest.json`](data/manifest.json).
+
+## cyijun Workflow Arena Luna skill panel
+
+The factual Luna skill-panel v1 CSV and JSON result tables under
+[`data/luna-skill-panel-v1/`](data/luna-skill-panel-v1/) are attributed to
+[`cyijun/workflow-arena@c746e58`](https://github.com/cyijun/workflow-arena/tree/c746e58bf850bd9bc8326f2172383a28841b2364/reports/luna-skill-panel-v1).
+That repository did not declare a repository license at the pinned commit.
+Accordingly, this repository preserves the byte-level provenance of the public
+factual tables and does not redistribute its HTML report, report prose, or claim
+that those records are relicensed under this repository's MIT license. The
+source repository also does not publish the raw sessions, per-run diffs, test
+logs, or individual judge-verdict files behind the compact tables.

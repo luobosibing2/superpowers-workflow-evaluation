@@ -151,6 +151,23 @@ Requirement + Review Loops 的 `loop-01` 原始产品 run 得分 94/93，均值 
 [`replacement.json`](../superseded/replacement.json)明确记录。replacement 发生后，
 pair-01 不再是同期执行，所以新两组 canonical 的整体差值只作描述性汇总。
 
+## 外部多任务横评：结果方向是否只出现在这一个 CLI 任务
+
+本仓另外归档了
+[`cyijun/workflow-arena@c746e58`](https://github.com/cyijun/workflow-arena/tree/c746e58bf850bd9bc8326f2172383a28841b2364)
+公开的 Luna skill-panel compact 结果。它在八个任务上比较 Superpowers Full、
+Grill Me、OpenSpec、Ponytail 和 MatrixSpec，每个 workflow-task cell 三条，共
+120 条 candidate run。Grill Me 的八任务宏均分为 92.14、focused-test 标志
+23/24，平均 5.85M candidate token 和 18.50 分钟；Full Superpowers 为 89.64、
+21/24、32.99M 和 48.38 分钟。
+
+这为“持续需求决策循环可能以较低成本捕获 Full 的大部分价值”提供了跨任务的
+描述性旁证，但不是本仓五组实验的直接复现：candidate 模型变为 Luna，任务集合、
+平台、批次和 operator 信息预算都不同，而且该面板没有同期 Bare。来源仓也没有
+公开 raw sessions、产品 diff、测试日志和 individual verdict，因此这里只能重建
+compact 表的算术，不能把结果升级为逐 run 原始证据。完整数据、来源和验证入口见
+[Luna 面板说明](luna-skill-panel.md)。
+
 ## 边界与验证
 
 已确认事实：五组各 3 条 canonical run；每条 2 份 verdict；15 份 focused-test

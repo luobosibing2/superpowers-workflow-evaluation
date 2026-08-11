@@ -11,6 +11,8 @@ auth.json
 baselines/
 candidates/
 tools/
+/.scratch/
+/ground-truth/
 **/.runtime/
 **/fixtures/
 **/state/
@@ -18,6 +20,15 @@ tools/
 **/invalidated/
 **/aborted-runs/
 **/evaluation/candidates*/
+/campaigns/**/runs/
+/campaigns/**/state/
+/campaigns/**/fixtures/
+/campaigns/**/evaluation/candidates*/
+/campaigns/**/evaluation/results*/
+/campaigns/**/evaluation/.judge-homes*/
+/campaigns/**/evaluation/stale-*/
+/campaigns/**/evaluation/rejected/
+/campaigns/**/ground-truth/reference/
 
 # Local and generated files
 .DS_Store

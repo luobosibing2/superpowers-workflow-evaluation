@@ -27,5 +27,15 @@ lanes accounted for 53.3% and 42.3% of the increase. Cached input represented
 95.3% of the token delta, which is evidence of heavy context transport—not proof
 that the same share was semantically redundant reading.
 
+The repository also republishes, with provenance, the public compact results
+from `cyijun/workflow-arena@c746e58`: 120 Luna candidate runs across five
+workflows and eight tasks. Grill Me led that descriptive panel at 92.14 with
+23/24 focused-test flags, averaging 5.85M candidate tokens and 18.50 minutes;
+Full Superpowers scored 89.64 with 21/24 at 32.99M and 48.38 minutes. This panel
+has no concurrent Bare arm and the source does not publish its raw sessions,
+diffs, test logs, or individual verdict files, so it is supporting cross-task
+context rather than a mergeable extension of the local 15-run experiment.
+
 See the [Chinese report](report.md), [canonical manifest](../data/manifest.json),
-and [deterministic audit](../scripts/audit-results.mjs) for evidence and limits.
+[local deterministic audit](../scripts/audit-results.mjs), and
+[Luna panel audit](../scripts/audit-luna-panel.mjs) for evidence and limits.
