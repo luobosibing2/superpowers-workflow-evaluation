@@ -214,6 +214,144 @@ footer { padding:28px 5vw; display:flex; justify-content:space-between; color:#8
 @media (max-width:1050px) { .path-steps{grid-template-columns:repeat(3,1fr)}.experiment-metrics{grid-template-columns:repeat(2,1fr)}.experiment-metrics>div:nth-child(2){border-right:0}.experiment-runs{grid-template-columns:repeat(2,1fr)} }
 @media (max-width:720px) { .experiment-metrics{grid-template-columns:repeat(2,1fr)}.experiment-metrics>div:nth-child(2){border-right:0}.path-steps{grid-template-columns:1fr}.path-steps li{min-height:0}.experiment-stage-grid>div{grid-template-columns:1fr 65px;gap:7px}.experiment-stage-grid i{grid-column:1/-1}.experiment-runs{grid-template-columns:1fr}.experiment-hero{padding-inline:20px} }
 
+/* Five-method home: favor reading space over dashboard density. */
+.home-page .hero { padding-bottom:72px; }
+.home-page .hero nav,
+.home-page .hero-copy,
+.home-page .metrics,
+.home-page .section,
+.home-page .scenario-teaser>.section-title,
+.home-page .scenario-summary,
+.home-page .scenario-methods,
+.home-page .questions>.section-title,
+.home-page .question-stack,
+.home-page .question-source { max-width:1320px; }
+.home-page .hero-copy { margin-top:88px; margin-bottom:64px; grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr); gap:88px; }
+.home-page .hero-copy>div>p { max-width:760px; font-size:19px; line-height:1.8; }
+.home-page .hero-copy aside { padding:30px 32px; }
+.home-page .hero-copy aside p { margin:14px 0; line-height:1.75; }
+.home-page .metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.home-page .metric { min-height:168px; padding:30px 34px; }
+.home-page .metric:nth-child(2) { border-right:0; }
+.home-page .metric:nth-child(-n+2) { border-bottom:1px solid #ffffff25; }
+.home-page .metric strong { margin:16px 0 14px; font-size:clamp(19px,1.7vw,27px); line-height:1.35; }
+.home-page .metric p { max-width:520px; font-size:13px; line-height:1.65; }
+.home-page .section { padding-top:112px; padding-bottom:112px; }
+.home-page .section-title { margin-bottom:48px; }
+.home-page .section-title h2 { margin-top:14px; line-height:1.06; }
+.home-page .section-title.split { gap:64px; }
+.home-page .section-title.split>p { max-width:460px; line-height:1.75; }
+.home-page .method-grid,
+.home-page .scenario-methods,
+.home-page .timeline-grid { grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px; }
+.home-page .method-grid article,
+.home-page .run-grid article { padding:34px; }
+.home-page .method-grid h3 { margin-top:16px; margin-bottom:30px; }
+.home-page .method-grid p { margin-top:24px; line-height:1.8; }
+.home-page .flow { gap:10px; }
+.home-page .flow i { padding:10px 12px; line-height:1.45; }
+.home-page .scenario-summary { gap:22px; margin-bottom:26px; }
+.home-page .scenario-summary>div { padding:28px 30px; }
+.home-page .scenario-summary p { margin-top:14px; line-height:1.8; }
+.home-page .scenario-methods article { padding:30px; }
+.home-page .scenario-methods h3 { min-height:0; margin:16px 0 24px; font-size:21px; }
+.home-page .scenario-methods dl { gap:12px; margin-bottom:24px; padding-top:20px; }
+.home-page .group-bars { padding:42px; }
+.home-page .group-bar { grid-template-columns:220px 1fr 140px; gap:26px; margin:28px 0; }
+.home-page .bar { height:40px; }
+.home-page .legend { gap:14px 28px; margin-top:34px; padding-top:26px; }
+.home-page .timeline-card { padding:30px; }
+.home-page .run-head h3 { margin-bottom:24px; }
+.home-page .lanes { gap:11px; }
+.home-page .lane { grid-template-columns:68px 1fr; gap:12px; }
+.home-page .lane-track { height:28px; }
+.home-page .lane-track button { top:4px; height:20px; }
+.home-page .run-foot { margin-top:20px; gap:10px 18px; line-height:1.5; }
+.home-page .notice { margin-bottom:40px; padding:20px 24px; line-height:1.75; }
+.home-page .drawer { margin-top:26px; padding:32px; gap:46px; }
+.home-page .question-stack { gap:32px; }
+.home-page .question-card { padding:44px; }
+.home-page .question-heading { grid-template-columns:66px 1fr; gap:26px; margin-bottom:36px; }
+.home-page .question-heading>b { width:52px; height:52px; }
+.home-page .question-heading p { margin-top:16px; line-height:1.75; }
+.home-page .analysis-detail-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:18px; margin-top:28px; }
+.home-page .analysis-detail-grid article { padding:26px; border:1px solid var(--line); background:#fffdf8; }
+.home-page .analysis-detail-grid article>span { color:#b34d68; font:700 10px var(--font-geist-mono),monospace; letter-spacing:.09em; text-transform:uppercase; }
+.home-page .analysis-detail-grid h4 { margin:16px 0 14px; font-size:19px; line-height:1.35; }
+.home-page .analysis-detail-grid p { margin:0; color:#5f6875; font-size:13px; line-height:1.8; }
+.home-page .analysis-detail-grid b { color:var(--ink); }
+.home-page .analysis-detail-grid code { color:#3d526f; font:700 10px var(--font-geist-mono),monospace; }
+.home-page .research-chart,
+.home-page .ladder-chart,
+.home-page .token-attribution-chart { padding:28px; }
+.home-page .research-row { padding:22px 0; }
+.home-page .acceptance-chart { margin-top:26px; padding:28px; }
+.home-page .acceptance-row { padding:15px 0; }
+.home-page .ladder-row { padding:22px 0; }
+.home-page .question-conclusion { margin-top:28px; padding:22px 24px; line-height:1.85; }
+.home-page .token-delta-group { margin-top:30px; }
+.home-page .token-delta-row { padding:11px 0; }
+.home-page .run-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
+.home-page .run-grid article dl { gap:22px 16px; margin-top:28px; padding-top:24px; }
+.home-page .finding-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:1px; background:var(--line); }
+.home-page .finding-grid article { padding:34px; border-right:0; }
+.home-page .finding-grid h3 { margin:18px 0; font-size:23px; }
+.home-page .finding-grid p { line-height:1.8; }
+.home-page .boundary-grid { gap:32px; }
+.home-page .boundary-grid>div,
+.home-page .boundary-grid>aside { padding:32px; }
+.home-page .boundary ul { line-height:1.9; }
+.home-page footer { padding-top:38px; padding-bottom:38px; gap:28px; }
+
+@media (max-width:1050px) {
+  .home-page .hero-copy { margin-top:64px; grid-template-columns:1fr; gap:38px; }
+  .home-page .hero-copy aside { max-width:760px; }
+  .home-page .method-grid,
+  .home-page .scenario-methods,
+  .home-page .timeline-grid,
+  .home-page .run-grid,
+  .home-page .analysis-detail-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .home-page .method-grid article:last-child,
+  .home-page .timeline-card:last-child { grid-column:auto; }
+  .home-page .group-bar { grid-template-columns:180px 1fr; }
+  .home-page .group-bar small { grid-column:2; display:block; text-align:left; }
+}
+
+@media (max-width:720px) {
+  .home-page .hero { padding-bottom:48px; }
+  .home-page .hero-copy { margin-top:46px; margin-bottom:42px; gap:28px; }
+  .home-page .hero-copy>div>p { font-size:17px; line-height:1.7; }
+  .home-page .hero-copy aside { padding:24px; }
+  .home-page .metrics { grid-template-columns:1fr; }
+  .home-page .metric { min-height:0; padding:26px 24px; border-right:0; border-bottom:1px solid #ffffff25; }
+  .home-page .metric:nth-child(2) { border-bottom:1px solid #ffffff25; }
+  .home-page .section { padding-top:72px; padding-bottom:72px; }
+  .home-page .section-title { margin-bottom:34px; }
+  .home-page .section-title.split { gap:22px; }
+  .home-page .method-grid,
+  .home-page .scenario-methods,
+  .home-page .timeline-grid,
+  .home-page .run-grid,
+  .home-page .finding-grid,
+  .home-page .analysis-detail-grid { grid-template-columns:1fr; }
+  .home-page .method-grid article,
+  .home-page .run-grid article,
+  .home-page .scenario-methods article,
+  .home-page .timeline-card,
+  .home-page .question-card { padding:26px 24px; }
+  .home-page .group-bars { padding:26px 22px; }
+  .home-page .group-bar { grid-template-columns:1fr; gap:10px; margin:26px 0; }
+  .home-page .group-bar small { grid-column:auto; }
+  .home-page .question-heading { grid-template-columns:46px 1fr; gap:16px; margin-bottom:28px; }
+  .home-page .question-heading>b { width:40px; height:40px; }
+  .home-page .research-chart,
+  .home-page .ladder-chart,
+  .home-page .token-attribution-chart,
+  .home-page .acceptance-chart { padding:20px; }
+  .home-page .boundary-grid>div,
+  .home-page .boundary-grid>aside { padding:26px 24px; }
+}
+
 /* External Luna skill panel */
 .luna-page { background:#f4f1e9; }
 .luna-hero { border-bottom-color:#0e9aaa; }

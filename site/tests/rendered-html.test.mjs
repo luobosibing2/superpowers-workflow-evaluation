@@ -39,6 +39,9 @@ test("server-renders all five groups and fifteen runs", async () => {
   assert.match(html, /Verified verdict/);
   assert.match(html, /需求闭环和定向代码审查/);
   assert.match(html, /Superpowers 新增 token 主要花在/);
+  assert.match(html, /三条 Full 都进入 98–100 分/);
+  assert.match(html, /最大的质量跃升发生在/);
+  assert.match(html, /95\.3% 的新增量表现为 cached input/);
   assert.match(html, /coordinate/);
   assert.match(html, /cached input/);
   assert.match(html, /14\.50/);

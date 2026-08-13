@@ -333,7 +333,7 @@ export default function Home() {
   const reviewLoops = data.groups.reviewLoops;
 
   return (
-    <main>
+    <main className="home-page">
       <header className="hero" id="top">
         <nav><a href="#top" className="brand">WA / TRACE 09</a><div><a href="/luna-panel">Luna 横评</a><a href="#shape">方法</a><a href="#scenario">场景</a><a href="#distribution">分布</a><a href="#timeline">轨迹</a><a href="#questions">问题</a><a href="#boundary">边界</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation">源码</a></div></nav>
         <div className="hero-copy">
@@ -398,18 +398,33 @@ export default function Home() {
             <div className="question-heading"><b>Q1</b><div><h3>Full Superpowers 相比较原生 Codex，质量和资源如何变化？隐藏验收能稳定通过吗？</h3><p>Full With 的分数跃升，但不是免费提升；高分也不能替代独立的 hidden acceptance gate。</p></div></div>
             <ScoreResourceChart />
             <AcceptanceChart />
+            <div className="analysis-detail-grid">
+              <article><span>01 / 产品质量</span><h4>三条 Full 都进入 98–100 分，和 Without 的 80.5–82.5 分区间没有重叠</h4><p>Full 的三条 run 分别是 <b>100 / 99 / 98</b>，Without 是 <b>82 / 82.5 / 80.5</b>。组均值从 81.67 提升到 99.00，增加 17.33 分。这个结果说明完整流程在本任务上显著减少了行为规格遗漏；但每组只有三条，且不是同期随机批次，所以它是强描述性证据，不是总体因果效应估计。</p></article>
+              <article><span>02 / 资源交换</span><h4>质量提升对应约 7.6 倍 token、4.7 倍时间和 7.5 倍执行 credits</h4><p>每条 run 的平均消耗从 <b>{fmtTokens(without.tokenMean)} → {fmtTokens(full.tokenMean)}</b>，墙钟从 <b>{fmtDuration(without.wallMeanSeconds)} → {fmtDuration(full.wallMeanSeconds)}</b>，工具调用从 <b>{without.toolCallsMean.toFixed(1)} → {full.toolCallsMean.toFixed(0)}</b>，execution credits 从 <b>{fmtCredits(without.estimatedCreditsMean ?? 0)} → {fmtCredits(full.estimatedCreditsMean ?? 0)}</b>。因此 Full 的优势不是“同样预算下免费变好”，而是用更多上下文、实施、协调和审查换取更完整的产品行为。</p></article>
+              <article><span>03 / 逐 run 验收</span><h4>100 分也不等于流程和隐藏验收都稳定通过</h4><p><b>run-02</b> 两份 verdict 都是 Verified、得分 100，但最终状态是 token cap；<b>run-03</b> 只有 1/2 Verified；<b>run-06</b> 是 0/2 Verified，仍得到 98 分。Full 合计只有 <b>3/6 Verified verdict、1/3 双 Verified run</b>。这说明 rubric 总分是在衡量产品质量，而 <code>overallValidation</code> 是另一种严格代理；两者相关，却不能互相替代。</p></article>
+            </div>
             <p className="question-conclusion"><strong>结论：</strong>Full 99.00 对 Without 81.67（+17.33），但平均墙钟约 4.69×、dedup token 7.64×、execution credits 7.49×、tool calls 7.47×。严格 Verified 代理只有 3/6 个 Full verdict、1/3 个 run 两次均 Verified；因此本样本支持“更高质量 / 更高资源”，不支持“隐藏验收稳定必过”。Full 的 run-02 虽两次 Verified 且得分 100，却在 token cap 截止，不能把分数当作流程完整性的证明。</p>
           </article>
 
           <article className="question-card">
             <div className="question-heading"><b>Q2</b><div><h3>需求闭环和定向代码审查分别带来多少收益？Full 还能继续稳定增益吗？</h3><p>这里的“审查”按实际协议是独立 reviewer 反复修复到无 critical/major，而不是人为固定一次。</p></div></div>
             <LadderChart />
+            <div className="analysis-detail-grid">
+              <article><span>01 / 需求闭环</span><h4>最大的质量跃升发生在“把需求问完整并获批”这一步</h4><p>Slim → Requirement Loop 的均分变化是 <b>83.17 → 97.67（+14.50）</b>。三条 Requirement run 分别问了 1、2、2 个定向问题，并经历 5、4、4 次设计审批请求；首次产品修改平均从 Slim 的 <b>+{fmtDuration(slim.firstMutationMeanSeconds)}</b> 推迟到 <b>+{fmtDuration(requirement.firstMutationMeanSeconds)}</b>。代价是每条多 <b>0.60M token、2:17 墙钟、3 次工具调用和 14.85 credits</b>。证据更支持“补齐隐藏行为边界带来主要收益”，而不是“多写计划本身带来收益”。</p></article>
+              <article><span>02 / Review 闭环</span><h4>审查的收益较小、成本较高，而且不是每条都正向</h4><p>Requirement → Review Loops 的更新后均值是 <b>+1.83 分</b>，同时每条多 <b>2.00M token、9:17 墙钟、22.7 次工具调用和 41.84 credits</b>。三个对齐差值分别为 <b>+4.00、−1.50、+3.00</b>：loop-01 一轮 review 后无 major fix，loop-04 和 loop-06 各两轮并各修复一次。review 能发现并修复实现问题，但效果取决于初始实现和 finding，并非机械地每条加分。</p></article>
+              <article><span>03 / Full 剩余流程</span><h4>加入 spec、TDD、多代理与更多 gate 后，没有观察到继续增分</h4><p>Review Loops → Full 的均分是 <b>99.50 → 99.00（−0.50）</b>，却再增加约 <b>11.00M token、19:40 墙钟、183.7 次工具调用和 97.63 credits</b>。这不能证明 Full 的剩余流程“有害”：两组来自不同批次，Full 还包含多个同时变化的机制；它只能说明在当前单任务、小样本和接近满分的天花板下，没有看到稳定的额外质量收益。</p></article>
+            </div>
             <p className="question-conclusion"><strong>结论：</strong>历史 Slim → Requirement Loop 的描述性增量是 +14.50 分，约多 24.95% 墙钟、26.53% token、51.83% credits；Requirement Loop → Review Loops 再增加 +1.83 分，却多 81.10% 墙钟、69.68% token、96.20% credits。Review Loops → Full 分数反而 −0.50，资源再增加约 95% 墙钟、226% token、114% credits；所以在这批小样本里，没有观察到 Full 在两个机制之后仍提供稳定质量增益。Slim→Requirement 是跨批次描述性比较，Review 的 pair-01 还被 posthoc rerun 替换，不能写成完整因果效应。</p>
           </article>
 
           <article className="question-card">
             <div className="question-heading"><b>Q3</b><div><h3>Superpowers 新增 token 主要花在实现、重复读上下文，还是主 Agent 与子 Agent 的协调？</h3><p>阶段、actor、usage 构成是三种互补切片，不把它们相加成一个“归因总和”。</p></div></div>
             <TokenAttributionChart />
+            <div className="analysis-detail-grid">
+              <article><span>01 / 按动作阶段</span><h4>最大增量是协调，其次才是实现和 review</h4><p>Full 相比 Without 每条多 <b>{fmtTokens(data.research.tokenAttribution.totalDeltaTokens)}</b> token。分类器把其中 <b>5.23M（37.9%）</b>归到 coordinate，<b>3.94M（28.6%）</b>归到 implement，<b>2.27M（16.5%）</b>归到 review；计划、测试、需求分别占 5.7%、5.4%、3.8%。所以新增 token 并非主要只花在“多写代码”，而是大量花在派发、等待后的续接、结果吸收和决策同步。</p></article>
+              <article><span>02 / 按 Actor</span><h4>主 Agent 仍是最大消费者，但子 Agent 已承担超过四成增量</h4><p>root 增加 <b>7.36M（53.3%）</b>，child 增加 <b>5.83M（42.3%）</b>，两者合计 <b>95.6%</b>；guardian 与 operator 合计约 4.4%。这说明 Full 的成本不是某个 reviewer actor 单独造成，而是主 Agent 保留全局上下文、子 Agent 各自执行任务，再由主 Agent 回收结果的组合成本。</p></article>
+              <article><span>03 / 按 Usage 构成</span><h4>95.3% 的新增量表现为 cached input，但它不是“重复读文件”的直接计数</h4><p>增量里 cached input 为 <b>13.14M（95.28%）</b>，uncached input 为 <b>0.59M（4.24%）</b>，reasoning 与其他 output 合计不足 0.5%。这说明成本主要随长上下文和会话续接累积，而不是最终输出文本；但 API usage 只告诉我们输入是否命中缓存，无法逐 token 区分“重复读取代码”“给子 Agent 传上下文”还是“汇总后继续推理”。</p></article>
+            </div>
             <p className="question-conclusion"><strong>结论：</strong>Full−Without 的新增 {fmtTokens(data.research.tokenAttribution.totalDeltaTokens)} token 中，阶段代理最大的是 coordinate {pct(data.research.tokenAttribution.stage.find((row) => row.stage === "coordinate")?.shareOfDelta ?? 0)}，其次 implement {pct(data.research.tokenAttribution.stage.find((row) => row.stage === "implement")?.shareOfDelta ?? 0)}、review {pct(data.research.tokenAttribution.stage.find((row) => row.stage === "review")?.shareOfDelta ?? 0)}；actor 视图中 root + child 合计约 95.6%。cached input 增量约 {pct(data.research.tokenAttribution.composition.find((row) => row.key === "cached")?.shareOfDelta ?? 0)}，只能作为上下文传输 / 缓存代理，不能直接证明模型语义上重复读了哪些文件。现有 raw tool evidence 支持“有派发、等待、follow-up、结果汇总”，但不能逐 token 拆成 dispatch、wait、summary。</p>
           </article>
         </div>
