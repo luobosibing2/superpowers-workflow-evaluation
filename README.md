@@ -31,9 +31,7 @@
 
 ## 扩展：Luna 五工作流、八任务面板
 
-本站另行归档并重新可视化了
-[`cyijun/workflow-arena@c746e58`](https://github.com/cyijun/workflow-arena/tree/c746e58bf850bd9bc8326f2172383a28841b2364)
-公开的 compact 结果。该面板使用 `gpt-5.6-luna/high` 候选和
+本站另行归档并重新可视化了一组公开的 Luna 五工作流、八任务 compact 结果。该面板使用 `gpt-5.6-luna/high` 候选和
 `gpt-5.6-terra/high` operator/judge，覆盖 5 种 workflow、8 个任务、每格 3 条，
 共 120 条 candidate run 和 240 个自动盲评分。
 
@@ -45,8 +43,8 @@
 | OpenSpec core | 72.00 | 24/24 | 16/24 | 5.51M | 13.62 min |
 | Ponytail | 70.19 | 24/24 | 14/24 | 3.17M | 9.25 min |
 
-这不是本仓重新运行的实验，也没有同期 Bare arm。来源仓公开了汇总 CSV/JSON，
-但没有提交 raw sessions、逐条产品 diff、测试日志和原始 verdict，因此本仓只重建并
+这不是本仓重新运行的实验，也没有同期 Bare arm。公开内容只有汇总 CSV/JSON，
+没有 raw sessions、逐条产品 diff、测试日志和原始 verdict，因此本仓只重建并
 审计公开算术，不能把它提升为与本仓 15 条 canonical results 相同的逐 run 证据等级。
 详细分析见 [Luna 面板说明](docs/luna-skill-panel.md)。
 

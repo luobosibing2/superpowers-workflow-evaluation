@@ -16,9 +16,9 @@ Its run values come from [`../results`](../results) and
 [`../data/manifest.json`](../data/manifest.json); the website does not overwrite
 the report or canonical evidence.
 
-The separate `/luna-panel` route republishes a provenance-labelled view of the
-public compact results from `cyijun/workflow-arena@c746e58`: five workflows,
-eight tasks, three runs per cell, 120 candidate runs and 240 blind judgments.
+The separate `/luna-panel` route republishes a provenance-labelled view of a
+public Luna compact-results panel: five workflows, eight tasks, three runs per
+cell, 120 candidate runs and 240 blind judgments.
 It is a cross-project descriptive panel, not another arm in the local 15-run
 experiment. Its source repository does not publish the raw run evidence needed
 for per-run diff, test-log, verdict or trajectory reconstruction. The page reads

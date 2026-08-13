@@ -1,9 +1,8 @@
 # Luna skill-panel v1 factual dataset
 
-This directory republishes the public factual result tables from
-[`cyijun/workflow-arena@c746e58`](https://github.com/cyijun/workflow-arena/tree/c746e58bf850bd9bc8326f2172383a28841b2364/reports/luna-skill-panel-v1).
-The byte-for-byte source hashes and import boundary are recorded in
-[`provenance.json`](./provenance.json).
+This directory republishes a public factual Luna five-workflow result panel.
+The fixed source commit, source path, byte-for-byte hashes and import boundary
+are recorded in [`provenance.json`](./provenance.json).
 
 Included:
 
