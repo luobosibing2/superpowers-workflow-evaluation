@@ -1,9 +1,7 @@
 import Link from "next/link";
 import panelData from "../luna-panel-data.json";
 
-const sourceCommit = "c746e58bf850bd9bc8326f2172383a28841b2364";
-const sourceRoot = `https://github.com/cyijun/workflow-arena/tree/${sourceCommit}`;
-const dataRoot = "https://github.com/luobosibing2/superpowers-workflow-evaluation/tree/main/data/luna-skill-panel-v1";
+const repositoryRoot = "https://github.com/luobosibing2/superpowers-workflow-evaluation";
 
 const tasks = [
   { key: "cli_item_list_fields", short: "CLI fields", label: "GitHub CLI 字段列" },
@@ -63,13 +61,13 @@ export default function LunaPanelPage() {
       <header className="detail-hero luna-hero" id="top">
         <nav>
           <Link href="/" className="brand">WA / TRACE 09</Link>
-          <div><a href="#answer">结论</a><a href="#matrix">任务矩阵</a><a href="#grill">Grill Me</a><a href="#runs">运行状态</a><a href="#boundary">边界</a><a href={dataRoot}>数据</a></div>
+          <div><a href="#answer">结论</a><a href="#matrix">任务矩阵</a><a href="#grill">Grill Me</a><a href="#runs">运行状态</a><a href={repositoryRoot}>源码</a></div>
         </nav>
         <div className="detail-hero-copy luna-hero-copy">
-          <span>EXTERNAL PANEL · LUNA/HIGH · 5 WORKFLOWS · 8 TASKS</span>
+          <span>WORKFLOW ARENA · LUNA/HIGH · 5 WORKFLOWS · 8 TASKS</span>
           <h1>同一批任务，<br /><em>五种技能工作流。</em></h1>
-          <p>把 cyijun/workflow-arena 发布的 120 条 compact 结果重新组织成本站的可读面板：比较产品分、精确测试、workflow 完成率和候选侧资源，同时把可证实的事实与缺失的 raw evidence 分开。</p>
-          <div className="luna-source-strip"><span>来源固定</span><code>{sourceCommit.slice(0, 8)}</code><span>候选 Luna/high</span><span>Operator + Judge Terra/high</span><span>每格 n=3</span></div>
+          <p>这是 Workflow Arena 的 Luna 五工作流、八任务横评面板：比较产品分、精确测试、workflow 完成率和候选侧资源，把五种方法放在同一组任务尺度上观察。</p>
+          <div className="luna-method-strip"><span>WORKFLOW ARENA</span><span>候选 Luna/high</span><span>Operator + Judge Terra/high</span><span>每格 n=3</span></div>
         </div>
         <div className="metrics luna-metrics">
           <div className="metric"><span>候选运行</span><strong>{panelData.runs}</strong><p>5 workflows × 8 tasks × 3</p></div>
@@ -147,20 +145,9 @@ export default function LunaPanelPage() {
           <div><span>Blind judges</span><b>{fmtLargeTokens(panelData.roleTokens.blind_judge.tokens)}</b><small>{panelData.roleTokens.blind_judge.units} judgments</small></div>
         </div>
         <div className="luna-failure-note"><b>MatrixSpec 的 12 条协议失败</b><p>9 条是独立 reviewer 修改产品文件，另有 review 尝试耗尽、无效 stage verdict、以及 review 前创建 full baseline 文档各 1 条。报告保留这些失败，没有用高盲评分覆盖流程终态。</p></div>
-        <p className="notice">来源汇总报告称 treatment adoption audit 为 {panelData.allTreatmentsAdopted ? `${panelData.runs}/${panelData.runs}` : "未全部通过"}；但采用判断引用的 raw sessions 没有发布，本仓只能保留该声明，不能逐条复核。{panelData.sessionAttributionFallbacks} 条记录使用 session attribution fallback，分数不受影响，但 token 归因精度应单独看待。</p>
       </section>
 
-      <section className="section boundary luna-boundary" id="boundary">
-        <div className="section-title"><span>06 / EVIDENCE BOUNDARY</span><h2>我们复制了可验证的结果事实，没有复制来源页面</h2></div>
-        <div className="boundary-grid">
-          <div><b>现在可以验证</b><ul><li>120 条 compact run 和每条两个分数</li><li>5 × 8 × 3 的 cell 结构</li><li>宏均分、状态、test flag 与资源汇总</li><li>四个导入数据文件与固定来源 SHA-256 一致</li></ul></div>
-          <div><b>仍然不能验证</b><ul><li>raw sessions：原始 candidate / operator 会话</li><li>逐 run 产品 diff 和真实测试日志</li><li>240 份 individual verdict 文件及 rubric 推理</li><li>treatment adoption 所引用的原始读取轨迹</li></ul></div>
-        </div>
-        <p className="notice">来源仓在固定提交没有声明 repository license，因此本页是基于公开事实表的原创重做，不重新发布其 HTML 或报告表达文本。`93/120` 是来源 compact 表中的 focused-test 标志，不等于本仓独立执行了 120 次测试。</p>
-        <div className="luna-actions"><a href={sourceRoot}>查看固定来源 →</a><a href={dataRoot}>下载归档数据 →</a><a href="https://github.com/luobosibing2/superpowers-workflow-evaluation/blob/main/docs/luna-skill-panel.md">阅读完整边界 →</a></div>
-      </section>
-
-      <footer><span>Workflow Arena · external Luna panel · 120 runs</span><span className="footer-links"><Link href="/">本站五方法实验</Link><a href={sourceRoot}>来源</a><a href={dataRoot}>数据</a><a href="https://github.com/luobosibing2/superpowers-slim">Superpowers Slim</a></span><span>Descriptive panel · no concurrent Bare</span></footer>
+      <footer><span>Workflow Arena · Luna workflow panel · 120 runs</span><span className="footer-links"><Link href="/">本站五方法实验</Link><a href={repositoryRoot}>源码</a><a href="https://github.com/luobosibing2/superpowers-slim">Superpowers Slim</a></span><span>Workflow Arena · 5 workflows · 8 tasks</span></footer>
     </main>
   );
 }

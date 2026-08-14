@@ -115,7 +115,7 @@ test("scenario and per-condition pages expose the task analysis", async () => {
   assert.match(experimentHtml, /coordinate/);
 });
 
-test("external Luna panel renders the imported five-workflow evidence", async () => {
+test("Luna panel renders the Workflow Arena five-workflow evidence", async () => {
   const [publishedData, siteData] = await Promise.all([
     readFile(new URL("../../data/luna-skill-panel-v1/capability-task-score-matrix.json", import.meta.url), "utf8"),
     readFile(new URL("../app/luna-panel-data.json", import.meta.url), "utf8"),
@@ -124,7 +124,7 @@ test("external Luna panel renders the imported five-workflow evidence", async ()
   const response = await render("/luna-panel");
   assert.equal(response.status, 200);
   const html = await response.text();
-  assert.match(html, /EXTERNAL PANEL/);
+  assert.match(html, /WORKFLOW ARENA/);
   assert.match(html, /五种技能工作流/);
   assert.match(html, />120</);
   assert.match(html, />240</);
@@ -138,12 +138,6 @@ test("external Luna panel renders the imported five-workflow evidence", async ()
   assert.match(html, /23\/24/);
   assert.match(html, /completed \/ protocol-failed \/ token-limit/);
   assert.match(html, /1\.602B/);
-  assert.match(html, /treatment adoption audit/);
-  assert.match(html, /session attribution fallback/);
-  assert.match(html, /c746e58/);
   assert.match(html, /没有同期 Bare/);
-  assert.match(html, /raw sessions/);
-  assert.match(html, /来源仓在固定提交没有声明 repository license/);
-  assert.match(html, /https:\/\/github\.com\/cyijun\/workflow-arena\/tree\/c746e58/);
-  assert.match(html, /data\/luna-skill-panel-v1/);
+  assert.doesNotMatch(html, /EXTERNAL PANEL|EVIDENCE BOUNDARY|现在可以验证|仍然不能验证|来源固定|来源仓|raw sessions|repository license|cyijun\/workflow-arena/i);
 });

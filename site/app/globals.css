@@ -352,14 +352,13 @@ footer { padding:28px 5vw; display:flex; justify-content:space-between; color:#8
   .home-page .boundary-grid>aside { padding:26px 24px; }
 }
 
-/* External Luna skill panel */
+/* Luna skill panel */
 .luna-page { background:#f4f1e9; }
 .luna-hero { border-bottom-color:#0e9aaa; }
 .luna-hero-copy { position:relative; }
 .luna-hero-copy h1 em { color:#7cd2d5; }
-.luna-source-strip { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:30px; color:#b8c1cb; font:700 11px var(--font-geist-mono),monospace; text-transform:uppercase; letter-spacing:.06em; }
-.luna-source-strip span,.luna-source-strip code { padding:8px 10px; border:1px solid #ffffff25; background:#ffffff08; }
-.luna-source-strip code { color:#7cd2d5; }
+.luna-method-strip { display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-top:30px; color:#b8c1cb; font:700 11px var(--font-geist-mono),monospace; text-transform:uppercase; letter-spacing:.06em; }
+.luna-method-strip span { padding:8px 10px; border:1px solid #ffffff25; background:#ffffff08; }
 .luna-metrics { max-width:1400px; margin:54px auto 0; }
 .luna-answer-grid { display:grid; grid-template-columns:1.4fr repeat(3,1fr); border:1px solid var(--line); background:var(--panel); }
 .luna-answer-grid article { min-width:0; padding:28px; border-right:1px solid var(--line); }
@@ -435,4 +434,4 @@ footer { padding:28px 5vw; display:flex; justify-content:space-between; color:#8
 .luna-panel-teaser b { display:block; font:700 32px var(--font-geist-mono),monospace; }
 .luna-panel-teaser small { color:#737c89; line-height:1.5; }
 @media (max-width:1050px) { .luna-answer-grid{grid-template-columns:1fr 1fr}.luna-answer-grid article:nth-child(2){border-right:0}.luna-answer-grid article{border-bottom:1px solid var(--line)}.luna-rank-list article{grid-template-columns:55px 1fr 110px}.luna-mini-bars{grid-column:2/-1}.luna-panel-teaser{grid-template-columns:1fr 1fr}.luna-panel-teaser .lead{grid-column:1/-1}.luna-grill-grid{grid-template-columns:1fr}.luna-grill-grid article{border-right:0;border-bottom:1px solid #ffffff26}.luna-status-grid,.luna-role-grid{grid-template-columns:1fr 1fr}.luna-role-grid>div:nth-child(2){border-right:0} }
-@media (max-width:720px) { .luna-hero-copy{margin-top:48px}.luna-source-strip{gap:7px}.luna-metrics{grid-template-columns:1fr 1fr}.luna-answer-grid{grid-template-columns:1fr}.luna-answer-grid article{border-right:0}.luna-rank-list article{grid-template-columns:38px 1fr}.luna-score{grid-column:2}.luna-mini-bars{grid-column:1/-1}.luna-task-notes{grid-template-columns:1fr}.luna-status-grid,.luna-role-grid{grid-template-columns:1fr 1fr}.luna-failure-note{grid-template-columns:1fr}.luna-panel-teaser{grid-template-columns:1fr}.luna-panel-teaser .lead{grid-column:auto} }
+@media (max-width:720px) { .luna-hero-copy{margin-top:48px}.luna-method-strip{gap:7px}.luna-metrics{grid-template-columns:1fr 1fr}.luna-answer-grid{grid-template-columns:1fr}.luna-answer-grid article{border-right:0}.luna-rank-list article{grid-template-columns:38px 1fr}.luna-score{grid-column:2}.luna-mini-bars{grid-column:1/-1}.luna-task-notes{grid-template-columns:1fr}.luna-status-grid,.luna-role-grid{grid-template-columns:1fr 1fr}.luna-failure-note{grid-template-columns:1fr}.luna-panel-teaser{grid-template-columns:1fr}.luna-panel-teaser .lead{grid-column:auto} }
